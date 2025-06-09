@@ -9,6 +9,7 @@
     <ItemGroup>
         <!-- Audit Trails related related packages -->
         <PackageReference Include="EntityFrameworkCore.CreatedUpdatedDate" Version="8.0.0" />
+        <PackageReference Include="Humanizer" Version="2.14.1" />
         <!-- Entity Framework Core related packages -->
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.2"/>
         <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.5" />
