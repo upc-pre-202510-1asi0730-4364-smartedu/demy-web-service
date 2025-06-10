@@ -1,49 +1,70 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using SmartEdu.Demy.Platform.API.Shared.Domain.Repositories;
+using SmartEdu.Demy.Platform.API.Shared.Infrastructure.Interfaces.ASP.Configuration;
 using SmartEdu.Demy.Platform.API.Shared.Infrastructure.Persistence.EFC.Configuration;
+using SmartEdu.Demy.Platform.API.Shared.Infrastructure.Persistence.EFC.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
 // Add Configuration for Routing
-builder.Services.AddControllers();
+builder.Services.AddRouting(options => options.LowercaseUrls = true);
+builder.Services.AddControllers(options =>
+{
+    options.Conventions.Add(new KebabCaseRouteNamingConvention());
+});
 
 // Add Database Connection
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-
 if (connectionString is null)
-    throw new Exception("Connection string is null");
+    throw new InvalidOperationException("Connection string is null");
+
+// Add CORS Policy
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAllPolicy", policy =>
+        policy.AllowAnyOrigin()
+            .AllowAnyMethod()
+            .AllowAnyHeader());
+});
 
 // Configure Database Context and Logging Levels
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
     if (builder.Environment.IsDevelopment())
+    {
         options.UseMySQL(connectionString)
             .LogTo(Console.WriteLine, LogLevel.Information)
             .EnableDetailedErrors()
             .EnableSensitiveDataLogging();
+    }
     else if (builder.Environment.IsProduction())
+    {
         options.UseMySQL(connectionString)
             .LogTo(Console.WriteLine, LogLevel.Error)
             .EnableDetailedErrors();
+    }
 });
 
-// OpenAPI/Swagger Configuration
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+// Configure Swagger / OpenAPI
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
+    options.EnableAnnotations();
     options.SwaggerDoc("v1", new OpenApiInfo
     {
         Title = "SmartEdu Demy Platform API",
         Version = "v1",
         Description = "Backend RESTful API for SmartEdu Demy"
     });
-    // options.EnableAnnotations();
 });
 
-// Add your application services, for example:
+// Register Unit of Work and other shared services
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+// Add the application services, for example:
 // builder.Services.AddScoped<IUserQueryService, UserQueryService>();
 
 var app = builder.Build();
@@ -58,6 +79,9 @@ using (var scope = app.Services.CreateScope())
 
 app.UseSwagger();
 app.UseSwaggerUI();
+
+// Enable CORS
+app.UseCors("AllowAllPolicy");
 
 app.UseHttpsRedirection();
 

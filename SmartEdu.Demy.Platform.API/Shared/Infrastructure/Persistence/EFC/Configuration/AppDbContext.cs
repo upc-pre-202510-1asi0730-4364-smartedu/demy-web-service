@@ -4,6 +4,9 @@ using SmartEdu.Demy.Platform.API.Shared.Infrastructure.Persistence.EFC.Configura
 
 namespace SmartEdu.Demy.Platform.API.Shared.Infrastructure.Persistence.EFC.Configuration;
 
+/// <summary>
+///     Application database context
+/// </summary>
 public class AppDbContext(DbContextOptions options) : DbContext(options)
 {
     protected override void OnConfiguring(DbContextOptionsBuilder builder)
