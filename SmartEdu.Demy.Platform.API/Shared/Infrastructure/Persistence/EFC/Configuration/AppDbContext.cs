@@ -1,6 +1,7 @@
 using EntityFrameworkCore.CreatedUpdatedDate.Extensions;
 using Microsoft.EntityFrameworkCore;
 using SmartEdu.Demy.Platform.API.Shared.Infrastructure.Persistence.EFC.Configuration.Extensions;
+using SmartEdu.Demy.Platform.API.Iam.Domain.Model.Aggregates;
 
 namespace SmartEdu.Demy.Platform.API.Shared.Infrastructure.Persistence.EFC.Configuration;
 
@@ -9,6 +10,7 @@ namespace SmartEdu.Demy.Platform.API.Shared.Infrastructure.Persistence.EFC.Confi
 /// </summary>
 public class AppDbContext(DbContextOptions options) : DbContext(options)
 {
+    public DbSet<UserAccount> UserAccounts { get; set; }
     protected override void OnConfiguring(DbContextOptionsBuilder builder)
     {
         // Add the created and updated interceptor
@@ -24,6 +26,14 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
 
         // Aquí irá lo demás
         
+        
+        builder.Entity<UserAccount>(entity =>
+        {
+            entity.ToTable("user_accounts");
+            entity.HasKey(e => e.UserId);
+            entity.Property(e => e.Role).HasConversion<string>();
+            entity.Property(e => e.Status).HasConversion<string>();
+        });
         builder.UseSnakeCaseNamingConvention();
     }
 }
