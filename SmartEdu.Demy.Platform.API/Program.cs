@@ -1,5 +1,10 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using SmartEdu.Demy.Platform.API.Attendance.Application.Internal.CommandServices;
+using SmartEdu.Demy.Platform.API.Attendance.Application.Internal.QueryServices;
+using SmartEdu.Demy.Platform.API.Attendance.Domain.Repositories;
+using SmartEdu.Demy.Platform.API.Attendance.Domain.Services;
+using SmartEdu.Demy.Platform.API.Attendance.Infrastructure.Repositories;
 using SmartEdu.Demy.Platform.API.Shared.Domain.Repositories;
 using SmartEdu.Demy.Platform.API.Shared.Infrastructure.Interfaces.ASP.Configuration;
 using SmartEdu.Demy.Platform.API.Shared.Infrastructure.Persistence.EFC.Configuration;
@@ -48,6 +53,8 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     }
 });
 
+
+
 // Configure Swagger / OpenAPI
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
@@ -65,6 +72,9 @@ builder.Services.AddSwaggerGen(options =>
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 // Add the application services, for example:
+builder.Services.AddScoped<IClassSessionRepository, ClassSessionRepository>();
+builder.Services.AddScoped<IClassSessionCommandService, ClassSessionCommandService>();
+builder.Services.AddScoped<IClassSessionQueryService, ClassSessionQueryService>();
 // builder.Services.AddScoped<IUserQueryService, UserQueryService>();
 
 var app = builder.Build();
