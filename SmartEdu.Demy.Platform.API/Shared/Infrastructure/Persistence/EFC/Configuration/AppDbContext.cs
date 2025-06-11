@@ -1,5 +1,7 @@
 using EntityFrameworkCore.CreatedUpdatedDate.Extensions;
 using Microsoft.EntityFrameworkCore;
+using SmartEdu.Demy.Platform.API.Billing.Domain.Model.Aggregates;
+using SmartEdu.Demy.Platform.API.Billing.Domain.Model.Entities;
 using SmartEdu.Demy.Platform.API.Shared.Infrastructure.Persistence.EFC.Configuration.Extensions;
 
 namespace SmartEdu.Demy.Platform.API.Shared.Infrastructure.Persistence.EFC.Configuration;
@@ -21,8 +23,25 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
         base.OnModelCreating(builder);
         
         // Billing Context
-
-        // Aquí irá lo demás
+        
+        builder.Entity<Invoice>().HasKey(i => i.Id);
+        builder.Entity<Invoice>().Property(i => i.Id).IsRequired().ValueGeneratedOnAdd();
+        builder.Entity<Invoice>().Property(i => i.StudentId).IsRequired();
+        builder.Entity<Invoice>().Property(i => i.Amount).IsRequired();
+        builder.Entity<Invoice>().Property(i => i.Currency).IsRequired().HasMaxLength(3);
+        builder.Entity<Invoice>().Property(i => i.DueDate).IsRequired();
+        builder.Entity<Invoice>().Property(i => i.Status).IsRequired();
+        builder.Entity<Invoice>().HasMany(i => i.Payments)
+            .WithOne(p => p.Invoice)
+            .HasForeignKey(p => p.InvoiceId)
+            .OnDelete(DeleteBehavior.Cascade);
+        
+        builder.Entity<Payment>().HasKey(p => p.Id);
+        builder.Entity<Payment>().Property(p => p.Id).IsRequired().ValueGeneratedOnAdd();
+        builder.Entity<Payment>().Property(p => p.Amount).IsRequired();
+        builder.Entity<Payment>().Property(p => p.Currency).IsRequired().HasMaxLength(3);
+        builder.Entity<Payment>().Property(p => p.Method).IsRequired();
+        builder.Entity<Payment>().Property(p => p.PaidAt).IsRequired();
         
         builder.UseSnakeCaseNamingConvention();
     }
