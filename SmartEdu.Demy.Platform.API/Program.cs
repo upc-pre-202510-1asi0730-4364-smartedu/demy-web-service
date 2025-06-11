@@ -5,6 +5,11 @@ using SmartEdu.Demy.Platform.API.Shared.Infrastructure.Interfaces.ASP.Configurat
 using SmartEdu.Demy.Platform.API.Shared.Infrastructure.Persistence.EFC.Configuration;
 using SmartEdu.Demy.Platform.API.Shared.Infrastructure.Persistence.EFC.Repositories;
 
+using SmartEdu.Demy.Platform.API.Enrollment.Domain.Repositories;
+using SmartEdu.Demy.Platform.API.Enrollment.Domain.Services;
+using SmartEdu.Demy.Platform.API.Enrollment.Application.Internal.QueryServices;
+using SmartEdu.Demy.Platform.API.Enrollment.Infrastructure.Persistence.EFC.Repositories;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -64,8 +69,9 @@ builder.Services.AddSwaggerGen(options =>
 // Register Unit of Work and other shared services
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
-// Add the application services, for example:
-// builder.Services.AddScoped<IUserQueryService, UserQueryService>();
+// Enrollment Bounded Context Dependency Injection Configuration
+builder.Services.AddScoped<IStudentRepository, StudentRepository>();
+builder.Services.AddScoped<IStudentQueryService, StudentQueryService>();
 
 var app = builder.Build();
 
