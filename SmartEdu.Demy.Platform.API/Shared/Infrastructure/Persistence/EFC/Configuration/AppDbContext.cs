@@ -2,6 +2,8 @@ using EntityFrameworkCore.CreatedUpdatedDate.Extensions;
 using Microsoft.EntityFrameworkCore;
 using SmartEdu.Demy.Platform.API.Scheduling.Domain.Model.Entities;
 using SmartEdu.Demy.Platform.API.Attendance.Domain.Model.Aggregates;
+using SmartEdu.Demy.Platform.API.Billing.Domain.Model.Aggregates;
+using SmartEdu.Demy.Platform.API.Billing.Domain.Model.Entities;
 using SmartEdu.Demy.Platform.API.Shared.Infrastructure.Persistence.EFC.Configuration.Extensions;
 
 namespace SmartEdu.Demy.Platform.API.Shared.Infrastructure.Persistence.EFC.Configuration;
@@ -23,8 +25,28 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
         base.OnModelCreating(builder);
         
         // Billing Context
+        
+        builder.Entity<Invoice>().HasKey(i => i.Id);
+        builder.Entity<Invoice>().Property(i => i.Id).IsRequired().ValueGeneratedOnAdd();
+        builder.Entity<Invoice>().Property(i => i.StudentId).IsRequired();
+        builder.Entity<Invoice>().Property(i => i.Amount).IsRequired();
+        builder.Entity<Invoice>().Property(i => i.Currency).IsRequired().HasMaxLength(3);
+        builder.Entity<Invoice>().Property(i => i.DueDate).IsRequired();
+        builder.Entity<Invoice>().Property(i => i.Status).IsRequired();
+        builder.Entity<Invoice>().HasMany(i => i.Payments)
+            .WithOne(p => p.Invoice)
+            .HasForeignKey(p => p.InvoiceId)
+            .OnDelete(DeleteBehavior.Cascade);
 
+        builder.Entity<Payment>().HasKey(p => p.Id);
+        builder.Entity<Payment>().Property(p => p.Id).IsRequired().ValueGeneratedOnAdd();
+        builder.Entity<Payment>().Property(p => p.Amount).IsRequired();
+        builder.Entity<Payment>().Property(p => p.Currency).IsRequired().HasMaxLength(3);
+        builder.Entity<Payment>().Property(p => p.Method).IsRequired();
+        builder.Entity<Payment>().Property(p => p.PaidAt).IsRequired();
+        
         // Attendance Context
+        
         builder.Entity<ClassSession>().HasKey(c => c.Id );
         builder.Entity<ClassSession>().Property(c => c.Id).IsRequired().ValueGeneratedOnAdd();
         builder.Entity<ClassSession>().Property(c => c.CourseId).IsRequired();
@@ -39,16 +61,12 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
             a.HasKey("ClassSessionId","StudentId");
         });
         
-        
-        
         // Scheduling Context
         builder.Entity<Course>().HasKey(c => c.Id);
         builder.Entity<Course>().Property(c => c.Id).IsRequired().ValueGeneratedOnAdd();
         builder.Entity<Course>().Property(c => c.Name).IsRequired().HasMaxLength(100);
         builder.Entity<Course>().Property(c => c.Code).IsRequired().HasMaxLength(20);
         builder.Entity<Course>().Property(c => c.Description).HasMaxLength(500);
-        
-        
         
         builder.UseSnakeCaseNamingConvention();
     }
