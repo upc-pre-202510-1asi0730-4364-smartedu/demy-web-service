@@ -1,5 +1,6 @@
 using EntityFrameworkCore.CreatedUpdatedDate.Extensions;
 using Microsoft.EntityFrameworkCore;
+using SmartEdu.Demy.Platform.API.Scheduling.Domain.Model.Entities;
 using SmartEdu.Demy.Platform.API.Shared.Infrastructure.Persistence.EFC.Configuration.Extensions;
 
 namespace SmartEdu.Demy.Platform.API.Shared.Infrastructure.Persistence.EFC.Configuration;
@@ -23,6 +24,16 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
         // Billing Context
 
         // Aquí irá lo demás
+        
+        
+        // Scheduling Context
+        builder.Entity<Course>().HasKey(c => c.Id);
+        builder.Entity<Course>().Property(c => c.Id).IsRequired().ValueGeneratedOnAdd();
+        builder.Entity<Course>().Property(c => c.Name).IsRequired().HasMaxLength(100);
+        builder.Entity<Course>().Property(c => c.Code).IsRequired().HasMaxLength(20);
+        builder.Entity<Course>().Property(c => c.Description).HasMaxLength(500);
+        
+        
         
         builder.UseSnakeCaseNamingConvention();
     }

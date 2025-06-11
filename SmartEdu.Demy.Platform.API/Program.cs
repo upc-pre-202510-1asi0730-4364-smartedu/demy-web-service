@@ -1,5 +1,10 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using SmartEdu.Demy.Platform.API.Scheduling.Application.Internal.CommandServices;
+using SmartEdu.Demy.Platform.API.Scheduling.Application.Internal.QueryServices;
+using SmartEdu.Demy.Platform.API.Scheduling.Domain.Repositories;
+using SmartEdu.Demy.Platform.API.Scheduling.Domain.Services;
+using SmartEdu.Demy.Platform.API.Scheduling.Infrastructure.Persistence.EFC.Repositories;
 using SmartEdu.Demy.Platform.API.Shared.Domain.Repositories;
 using SmartEdu.Demy.Platform.API.Shared.Infrastructure.Interfaces.ASP.Configuration;
 using SmartEdu.Demy.Platform.API.Shared.Infrastructure.Persistence.EFC.Configuration;
@@ -66,6 +71,11 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 // Add the application services, for example:
 // builder.Services.AddScoped<IUserQueryService, UserQueryService>();
+
+// Scheduling Bounded Context Dependency Injection Configuration
+builder.Services.AddScoped<ICourseCommandService, CourseCommandService>();
+builder.Services.AddScoped<ICourseQueryService, CourseQueryService>();
+builder.Services.AddScoped<ICourseRepository, CourseRepository>();
 
 var app = builder.Build();
 
