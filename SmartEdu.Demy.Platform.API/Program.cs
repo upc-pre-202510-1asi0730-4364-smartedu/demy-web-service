@@ -1,5 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using SmartEdu.Demy.Platform.API.Billing.Application.Internal.QueryServices;
+using SmartEdu.Demy.Platform.API.Billing.Domain.Repositories;
+using SmartEdu.Demy.Platform.API.Billing.Domain.Services;
+using SmartEdu.Demy.Platform.API.Billing.Infrastructure.Persistence.EFC.Repositories;
 using SmartEdu.Demy.Platform.API.Shared.Domain.Repositories;
 using SmartEdu.Demy.Platform.API.Shared.Infrastructure.Interfaces.ASP.Configuration;
 using SmartEdu.Demy.Platform.API.Shared.Infrastructure.Persistence.EFC.Configuration;
@@ -61,11 +65,14 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
-// Register Unit of Work and other shared services
+// Dependency Injection Configuration
+
+// Shared Bounded Context Dependency Injection Configuration
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
-// Add the application services, for example:
-// builder.Services.AddScoped<IUserQueryService, UserQueryService>();
+// Billing Bounded Context Dependency Injection Configuration
+builder.Services.AddScoped<IInvoiceRepository, InvoiceRepository>();
+builder.Services.AddScoped<IInvoiceQueryService, InvoiceQueryService>();
 
 var app = builder.Build();
 
