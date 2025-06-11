@@ -1,6 +1,7 @@
 using EntityFrameworkCore.CreatedUpdatedDate.Extensions;
 using Microsoft.EntityFrameworkCore;
 using SmartEdu.Demy.Platform.API.Scheduling.Domain.Model.Entities;
+using SmartEdu.Demy.Platform.API.Attendance.Domain.Model.Aggregates;
 using SmartEdu.Demy.Platform.API.Shared.Infrastructure.Persistence.EFC.Configuration.Extensions;
 
 namespace SmartEdu.Demy.Platform.API.Shared.Infrastructure.Persistence.EFC.Configuration;
@@ -23,7 +24,21 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
         
         // Billing Context
 
-        // Aquí irá lo demás
+        // Attendance Context
+        builder.Entity<ClassSession>().HasKey(c => c.Id );
+        builder.Entity<ClassSession>().Property(c => c.Id).IsRequired().ValueGeneratedOnAdd();
+        builder.Entity<ClassSession>().Property(c => c.CourseId).IsRequired();
+        builder.Entity<ClassSession>().Property(c => c.Date).IsRequired();
+
+        builder.Entity<ClassSession>().OwnsMany(c => c.Attendance, a =>
+        {
+            a.WithOwner().HasForeignKey("ClassSessionId");;
+            a.Property(ar => ar.StudentId).HasColumnName("StudentId").IsRequired().ValueGeneratedNever();
+            a.Property(ar => ar.Status).HasColumnName("Status").IsRequired();
+            
+            a.HasKey("ClassSessionId","StudentId");
+        });
+        
         
         
         // Scheduling Context
