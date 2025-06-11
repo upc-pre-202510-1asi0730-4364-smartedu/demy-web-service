@@ -5,6 +5,7 @@ using SmartEdu.Demy.Platform.API.Attendance.Domain.Model.Aggregates;
 using SmartEdu.Demy.Platform.API.Billing.Domain.Model.Aggregates;
 using SmartEdu.Demy.Platform.API.Billing.Domain.Model.Entities;
 using SmartEdu.Demy.Platform.API.Shared.Infrastructure.Persistence.EFC.Configuration.Extensions;
+using SmartEdu.Demy.Platform.API.Iam.Domain.Model.Aggregates;
 
 namespace SmartEdu.Demy.Platform.API.Shared.Infrastructure.Persistence.EFC.Configuration;
 
@@ -13,6 +14,7 @@ namespace SmartEdu.Demy.Platform.API.Shared.Infrastructure.Persistence.EFC.Confi
 /// </summary>
 public class AppDbContext(DbContextOptions options) : DbContext(options)
 {
+    public DbSet<UserAccount> UserAccounts { get; set; }
     protected override void OnConfiguring(DbContextOptionsBuilder builder)
     {
         // Add the created and updated interceptor
@@ -68,6 +70,14 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
         builder.Entity<Course>().Property(c => c.Code).IsRequired().HasMaxLength(20);
         builder.Entity<Course>().Property(c => c.Description).HasMaxLength(500);
         
+        
+        builder.Entity<UserAccount>(entity =>
+        {
+            entity.ToTable("user_accounts");
+            entity.HasKey(e => e.UserId);
+            entity.Property(e => e.Role).HasConversion<string>();
+            entity.Property(e => e.Status).HasConversion<string>();
+        });
         builder.UseSnakeCaseNamingConvention();
     }
 }
