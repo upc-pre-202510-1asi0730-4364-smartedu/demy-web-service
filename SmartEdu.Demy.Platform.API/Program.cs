@@ -14,6 +14,10 @@ using SmartEdu.Demy.Platform.API.Attendance.Application.Internal.QueryServices;
 using SmartEdu.Demy.Platform.API.Attendance.Domain.Repositories;
 using SmartEdu.Demy.Platform.API.Attendance.Domain.Services;
 using SmartEdu.Demy.Platform.API.Attendance.Infrastructure.Repositories;
+using SmartEdu.Demy.Platform.API.Enrollment.Domain.Repositories;
+using SmartEdu.Demy.Platform.API.Enrollment.Domain.Services;
+using SmartEdu.Demy.Platform.API.Enrollment.Application.Internal.QueryServices;
+using SmartEdu.Demy.Platform.API.Enrollment.Infrastructure.Persistence.EFC.Repositories;
 using SmartEdu.Demy.Platform.API.Shared.Domain.Repositories;
 using SmartEdu.Demy.Platform.API.Shared.Infrastructure.Interfaces.ASP.Configuration;
 using SmartEdu.Demy.Platform.API.Shared.Infrastructure.Persistence.EFC.Configuration;
@@ -93,6 +97,10 @@ builder.Services.AddScoped<IClassSessionQueryService, ClassSessionQueryService>(
 builder.Services.AddScoped<ICourseCommandService, CourseCommandService>();
 builder.Services.AddScoped<ICourseQueryService, CourseQueryService>();
 builder.Services.AddScoped<ICourseRepository, CourseRepository>();
+
+// Enrollment Bounded Context Dependency Injection Configuration
+builder.Services.AddScoped<IStudentRepository, StudentRepository>();
+builder.Services.AddScoped<IStudentQueryService, StudentQueryService>();
 
 var app = builder.Build();
 

@@ -4,8 +4,9 @@ using SmartEdu.Demy.Platform.API.Scheduling.Domain.Model.Entities;
 using SmartEdu.Demy.Platform.API.Attendance.Domain.Model.Aggregates;
 using SmartEdu.Demy.Platform.API.Billing.Domain.Model.Aggregates;
 using SmartEdu.Demy.Platform.API.Billing.Domain.Model.Entities;
-using SmartEdu.Demy.Platform.API.Shared.Infrastructure.Persistence.EFC.Configuration.Extensions;
+using SmartEdu.Demy.Platform.API.Enrollment.Domain.Model.Entities;
 using SmartEdu.Demy.Platform.API.Iam.Domain.Model.Aggregates;
+using SmartEdu.Demy.Platform.API.Shared.Infrastructure.Persistence.EFC.Configuration.Extensions;
 
 namespace SmartEdu.Demy.Platform.API.Shared.Infrastructure.Persistence.EFC.Configuration;
 
@@ -14,6 +15,7 @@ namespace SmartEdu.Demy.Platform.API.Shared.Infrastructure.Persistence.EFC.Confi
 /// </summary>
 public class AppDbContext(DbContextOptions options) : DbContext(options)
 {
+    // Esto no debería ir aquí
     public DbSet<UserAccount> UserAccounts { get; set; }
     protected override void OnConfiguring(DbContextOptionsBuilder builder)
     {
@@ -47,6 +49,41 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
         builder.Entity<Payment>().Property(p => p.Method).IsRequired();
         builder.Entity<Payment>().Property(p => p.PaidAt).IsRequired();
         
+        // Enrollment Context
+
+        builder.Entity<Student>().HasKey(s => s.Id);
+
+        builder.Entity<Student>().Property(s => s.Id)
+            .IsRequired()
+            .ValueGeneratedOnAdd();
+
+        builder.Entity<Student>().Property(s => s.FirstName)
+            .IsRequired()
+            .HasMaxLength(100);
+
+        builder.Entity<Student>().Property(s => s.LastName)
+            .IsRequired()
+            .HasMaxLength(100);
+
+        builder.Entity<Student>().Property(s => s.Dni)
+            .IsRequired()
+            .HasMaxLength(20);
+
+        builder.Entity<Student>().Property(s => s.Sex)
+            .IsRequired()
+            .HasConversion<string>()  // Si ESex es enum, lo guardamos como string
+            .HasMaxLength(10);
+
+        builder.Entity<Student>().Property(s => s.BirthDate)
+            .IsRequired(false);
+
+        builder.Entity<Student>().Property(s => s.Address)
+            .IsRequired()
+            .HasMaxLength(255);
+
+        builder.Entity<Student>().Property(s => s.PhoneNumber)
+            .HasMaxLength(9);
+        
         // Attendance Context
         
         builder.Entity<ClassSession>().HasKey(c => c.Id );
@@ -64,6 +101,7 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
         });
         
         // Scheduling Context
+        
         builder.Entity<Course>().HasKey(c => c.Id);
         builder.Entity<Course>().Property(c => c.Id).IsRequired().ValueGeneratedOnAdd();
         builder.Entity<Course>().Property(c => c.Name).IsRequired().HasMaxLength(100);
