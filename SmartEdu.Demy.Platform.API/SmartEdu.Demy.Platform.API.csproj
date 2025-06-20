@@ -21,4 +21,8 @@
         <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="8.1.4" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Iam\Application\Internal\OutboundServices\" />
+    </ItemGroup>
+
 </Project>

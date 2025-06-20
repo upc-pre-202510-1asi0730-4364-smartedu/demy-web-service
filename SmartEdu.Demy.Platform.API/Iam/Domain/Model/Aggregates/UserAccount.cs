@@ -1,17 +1,25 @@
-﻿namespace SmartEdu.Demy.Platform.API.Iam.Domain.Model.Aggregates;
-
+﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 using SmartEdu.Demy.Platform.API.Iam.Domain.Model.ValueObjects;
 
-public class UserAccount
+
+namespace SmartEdu.Demy.Platform.API.Iam.Domain.Model.Aggregates;
+
+
+public partial class UserAccount
 {
     public long UserId { get; set; }
+    
+    [MaxLength(60)]
     public string FullName { get; set; }
+    [MaxLength(100)]
     public string Email { get; set; }
-    public string PasswordHash { get; set; }
-    public Role Role { get; set; }
-    public AccountStatus Status { get; set; }
-
-    protected UserAccount() { } 
+    
+    [MaxLength(50)]
+    [JsonIgnore] public string PasswordHash { get; set; }
+    public Role Role { get;private set; }
+    public AccountStatus Status { get; private set; }
+    
     
     public UserAccount(long userId, string fullName, string email, string passwordHash, Role role)
     {
@@ -28,4 +36,7 @@ public class UserAccount
     public void Block() => Status = AccountStatus.BLOCKED;
     public void ChangePassword(string newHash) => PasswordHash = newHash;
     public void UpdateEmail(string newEmail) => Email = newEmail;
+    
+
+    
 }
