@@ -5,9 +5,10 @@ using SmartEdu.Demy.Platform.API.Shared.Infrastructure.Interfaces.ASP.Configurat
 using SmartEdu.Demy.Platform.API.Shared.Infrastructure.Persistence.EFC.Configuration;
 using SmartEdu.Demy.Platform.API.Shared.Infrastructure.Persistence.EFC.Repositories;
 
+using SmartEdu.Demy.Platform.API.Enrollment.Application.Internal.CommandServices;
+using SmartEdu.Demy.Platform.API.Enrollment.Application.Internal.QueryServices;
 using SmartEdu.Demy.Platform.API.Enrollment.Domain.Repositories;
 using SmartEdu.Demy.Platform.API.Enrollment.Domain.Services;
-using SmartEdu.Demy.Platform.API.Enrollment.Application.Internal.QueryServices;
 using SmartEdu.Demy.Platform.API.Enrollment.Infrastructure.Persistence.EFC.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -70,8 +71,21 @@ builder.Services.AddSwaggerGen(options =>
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 // Enrollment Bounded Context Dependency Injection Configuration
-builder.Services.AddScoped<IStudentRepository, StudentRepository>();
+// AcademicPeriod
+builder.Services.AddScoped<IAcademicPeriodCommandService, AcademicPeriodCommandService>();
+builder.Services.AddScoped<IAcademicPeriodQueryService, AcademicPeriodQueryService>();
+builder.Services.AddScoped<IAcademicPeriodRepository, AcademicPeriodRepository>();
+
+// Enrollment
+builder.Services.AddScoped<IEnrollmentCommandService, EnrollmentCommandService>();
+builder.Services.AddScoped<IEnrollmentQueryService, EnrollmentQueryService>();
+builder.Services.AddScoped<IEnrollmentRepository, EnrollmentRepository>();
+
+// Student
+builder.Services.AddScoped<IStudentCommandService, StudentCommandService>();
 builder.Services.AddScoped<IStudentQueryService, StudentQueryService>();
+builder.Services.AddScoped<IStudentRepository, StudentRepository>();
+
 
 var app = builder.Build();
 
