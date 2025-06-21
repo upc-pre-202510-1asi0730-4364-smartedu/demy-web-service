@@ -112,6 +112,10 @@ builder.Services.AddScoped<IUserAccountRepository, UserRepository>();
 builder.Services.AddScoped<IUserAccountQueryService, UserAccountQueryService>();
 builder.Services.AddScoped<IUserAccountCommandService, UserAccountCommandService>();
 
+// Add this to bind to Railway's assigned PORT
+var port = Environment.GetEnvironmentVariable("PORT") ?? "5000";
+builder.WebHost.UseUrls($"http://*:{port}");
+
 var app = builder.Build();
 
 // Verify Database Objects are Created
