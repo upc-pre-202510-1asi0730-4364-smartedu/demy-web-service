@@ -1,5 +1,5 @@
 using SmartEdu.Demy.Platform.API.Scheduling.Domain.Model.Commands;
-using SmartEdu.Demy.Platform.API.Scheduling.Domain.Model.Entities;
+using SmartEdu.Demy.Platform.API.Scheduling.Domain.Model.Aggregates;
 using SmartEdu.Demy.Platform.API.Scheduling.Domain.Repositories;
 using SmartEdu.Demy.Platform.API.Scheduling.Domain.Services;
 using SmartEdu.Demy.Platform.API.Shared.Domain.Repositories;
