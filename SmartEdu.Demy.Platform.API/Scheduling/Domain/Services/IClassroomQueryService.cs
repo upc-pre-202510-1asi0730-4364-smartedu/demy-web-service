@@ -3,9 +3,10 @@ using SmartEdu.Demy.Platform.API.Scheduling.Domain.Model.Queries;
 
 namespace SmartEdu.Demy.Platform.API.Scheduling.Domain.Services;
 
-public interface ICourseQueryService
+public interface IClassroomQueryService
 {
-    Task<IEnumerable<Course>> Handle(GetAllCoursesQuery query);
+    Task<IEnumerable<Classroom>> Handle(GetAllClassroomsQuery query);
     
-    Task<Course?> Handle(GetCourseByIdQuery query);
+    Task<Classroom?> Handle(GetClassroomByIdQuery query);
+    
 }

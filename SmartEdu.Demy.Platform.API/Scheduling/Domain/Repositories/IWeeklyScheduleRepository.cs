@@ -5,7 +5,9 @@ namespace SmartEdu.Demy.Platform.API.Scheduling.Domain.Repositories;
 
 public interface IWeeklyScheduleRepository : IBaseRepository<WeeklySchedule>
 {
+    Task<IEnumerable<WeeklySchedule>> FindByNameAsync(string name);
     
-    Task<WeeklySchedule?> FindWeeklyScheduleByNameAsync(string name);
+    Task<IEnumerable<WeeklySchedule>> FindByCourseIdAsync(int courseId);
     
+    Task<IEnumerable<WeeklySchedule>> FindByClassroomIdAsync(int classroomId);
 }

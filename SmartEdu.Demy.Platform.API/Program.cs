@@ -103,6 +103,14 @@ builder.Services.AddScoped<ICourseCommandService, CourseCommandService>();
 builder.Services.AddScoped<ICourseQueryService, CourseQueryService>();
 builder.Services.AddScoped<ICourseRepository, CourseRepository>();
 
+builder.Services.AddScoped<IClassroomCommandService, ClassroomCommandService>();
+builder.Services.AddScoped<IClassroomQueryService, ClassroomQueryService>();
+builder.Services.AddScoped<IClassroomRepository, ClassroomRepository>();
+
+builder.Services.AddScoped<IWeeklyScheduleCommandService, WeeklyScheduleCommandService>();
+builder.Services.AddScoped<IWeeklyScheduleQueryService, WeeklyScheduleQueryService>();
+builder.Services.AddScoped<IWeeklyScheduleRepository, WeeklyScheduleRepository>();
+
 // Enrollment Bounded Context Dependency Injection Configuration
 builder.Services.AddScoped<IStudentRepository, StudentRepository>();
 builder.Services.AddScoped<IStudentQueryService, StudentQueryService>();
@@ -113,8 +121,11 @@ builder.Services.AddScoped<IUserAccountQueryService, UserAccountQueryService>();
 builder.Services.AddScoped<IUserAccountCommandService, UserAccountCommandService>();
 
 // Add this to bind to Railway's assigned PORT
-var port = Environment.GetEnvironmentVariable("PORT") ?? "5000";
-builder.WebHost.UseUrls($"http://*:{port}");
+if (builder.Environment.IsProduction())
+{
+    var port = Environment.GetEnvironmentVariable("PORT") ?? "5000";
+    builder.WebHost.UseUrls($"http://*:{port}");
+}
 
 var app = builder.Build();
 

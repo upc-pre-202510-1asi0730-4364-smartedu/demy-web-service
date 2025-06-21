@@ -1,6 +1,6 @@
-namespace SmartEdu.Demy.Platform.API.Scheduling.Domain.Model.Entities;
+namespace SmartEdu.Demy.Platform.API.Scheduling.Domain.Model.Aggregates;
 
-public class Course
+public partial class Course
 {
     public int Id { get; private set; }
     public string Name { get; private set; }

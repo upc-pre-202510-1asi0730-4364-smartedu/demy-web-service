@@ -6,20 +6,19 @@ using SmartEdu.Demy.Platform.API.Shared.Domain.Repositories;
 
 namespace SmartEdu.Demy.Platform.API.Scheduling.Application.Internal.CommandServices;
 
-public class CourseCommandService(
-    ICourseRepository courseRepository, 
+public class ClassroomCommandService(
+    IClassroomRepository classroomRepository, 
     IUnitOfWork unitOfWork) 
-    : ICourseCommandService
+    : IClassroomCommandService
 {
-    
-    public async Task<Course?> Handle(CreateCourseCommand command)
+    public async Task<Classroom?> Handle(CreateClassroomCommand command)
     {
-        var course = new Course(command.Name, command.Code, command.Description);
+        var classroom = new Classroom(command);
         try
         {
-            await courseRepository.AddAsync(course);
+            await classroomRepository.AddAsync(classroom);
             await unitOfWork.CompleteAsync();
-            return course;
+            return classroom;
         } 
         catch (Exception e)
         {
@@ -27,18 +26,18 @@ public class CourseCommandService(
             return null;
         }
     }
-
-    public async Task<Course?> Handle(UpdateCourseCommand command)
+    
+    public async Task<Classroom?> Handle(UpdateClassroomCommand command)
     {
-        var course = await courseRepository.FindByIdAsync(command.Id);
-        if (course == null) return null;
+        var classroom = await classroomRepository.FindByIdAsync(command.Id);
+        if (classroom == null) return null;
         
         try
         {
-            course.UpdateCourse(command.Name, command.Code, command.Description);
-            courseRepository.Update(course);
+            classroom.UpdateClassroom(command.Code, command.Capacity, command.Campus);
+            classroomRepository.Update(classroom);
             await unitOfWork.CompleteAsync();
-            return course;
+            return classroom;
         }
         catch (Exception e)
         {
@@ -46,15 +45,15 @@ public class CourseCommandService(
             return null;
         }
     }
-
-    public async Task<bool> Handle(DeleteCourseCommand command)
+    
+    public async Task<bool> Handle(DeleteClassroomCommand command)
     {
-        var course = await courseRepository.FindByIdAsync(command.Id);
-        if (course == null) return false;
+        var classroom = await classroomRepository.FindByIdAsync(command.Id);
+        if (classroom == null) return false;
         
         try
         {
-            courseRepository.Remove(course);
+            classroomRepository.Remove(classroom);
             await unitOfWork.CompleteAsync();
             return true;
         }

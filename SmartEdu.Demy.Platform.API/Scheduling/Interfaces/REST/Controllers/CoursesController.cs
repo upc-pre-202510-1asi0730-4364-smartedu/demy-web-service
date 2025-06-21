@@ -62,7 +62,7 @@ public class CoursesController(
     [HttpDelete("{courseId:int}")]
     [SwaggerOperation("Delete Course", "Delete an existing course.", OperationId = "DeleteCourse")]
     [SwaggerResponse(200, "The course was deleted.")]
-    [SwaggerResponse(404, "The course was not found.")]
+    [SwaggerResponse(404, "The course was not found.")] 
     public async Task<IActionResult> DeleteCourse(int courseId)
     {
         var deleteCourseCommand = new DeleteCourseCommand(courseId);
