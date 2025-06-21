@@ -1,14 +1,11 @@
 ﻿namespace SmartEdu.Demy.Platform.API.Enrollment.Interfaces.REST.Resources;
 
 public record StudentResource(
-    long Id,
-    string FirstName,
-    string LastName,
+    int Id,
+    string Name,
     string Dni,
     string Sex,
-    DateTime? BirthDate,
+    DateTime BirthDate,
     string Address,
-    string PhoneNumber,
-    DateTimeOffset? CreatedAt,
-    DateTimeOffset? UpdatedAt
+    string PhoneNumber
 );
