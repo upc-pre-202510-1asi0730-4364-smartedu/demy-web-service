@@ -72,10 +72,19 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 // Add the application services, for example:
 // builder.Services.AddScoped<IUserQueryService, UserQueryService>();
 
-// Scheduling Bounded Context Dependency Injection Configuration
 builder.Services.AddScoped<ICourseCommandService, CourseCommandService>();
 builder.Services.AddScoped<ICourseQueryService, CourseQueryService>();
 builder.Services.AddScoped<ICourseRepository, CourseRepository>();
+
+builder.Services.AddScoped<IClassroomCommandService, ClassroomCommandService>();
+builder.Services.AddScoped<IClassroomQueryService, ClassroomQueryService>();
+builder.Services.AddScoped<IClassroomRepository, ClassroomRepository>();
+
+builder.Services.AddScoped<IWeeklyScheduleCommandService, WeeklyScheduleCommandService>();
+builder.Services.AddScoped<IWeeklyScheduleQueryService, WeeklyScheduleQueryService>();
+builder.Services.AddScoped<IWeeklyScheduleRepository, WeeklyScheduleRepository>();
+
+
 
 var app = builder.Build();
 
