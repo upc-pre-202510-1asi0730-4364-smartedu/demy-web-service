@@ -3,10 +3,10 @@ using SmartEdu.Demy.Platform.API.Scheduling.Interfaces.REST.Resources;
 
 namespace SmartEdu.Demy.Platform.API.Scheduling.Interfaces.REST.Transform;
 
-public static class CourseResourceFromEntityAssembler
+public static class ClassroomResourceFromEntityAssembler
 {
-    public static CourseResource ToResourceFromEntity(Course entity)
+    public static ClassroomResource ToResourceFromEntity(Classroom entity)
     {
-        return new CourseResource(entity.Id, entity.Name, entity.Code, entity.Description);
+        return new ClassroomResource(entity.Id, entity.Code, entity.Capacity, entity.Campus);
     }
 }

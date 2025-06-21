@@ -1,22 +1,34 @@
 namespace SmartEdu.Demy.Platform.API.Scheduling.Domain.Model.ValueObjects;
 
-public record TimeRange(string Start, string End)
+public record TimeRange
 {
-    public TimeRange() : this(string.Empty, string.Empty) { }
-    
-    public string Start { get; init; } = Start ?? throw new ArgumentNullException(nameof(Start));
-    public string End { get; init; } = End ?? throw new ArgumentNullException(nameof(End));
-    
+    public TimeOnly StartTime { get; init; }
+    public TimeOnly EndTime { get; init; }
+
+    public TimeRange(TimeOnly startTime, TimeOnly endTime)
+    {
+        if (startTime >= endTime)
+            throw new ArgumentException("Start time must be before end time");
+            
+        StartTime = startTime;
+        EndTime = endTime;
+    }
+
+    public TimeRange(string startTime, string endTime)
+        : this(TimeOnly.Parse(startTime), TimeOnly.Parse(endTime))
+    {
+    }
+
+    /// <summary>
+    /// Gets the duration of the time range in minutes
+    /// </summary>
+    public int DurationInMinutes => (int)(EndTime - StartTime).TotalMinutes;
+
+    /// <summary>
+    /// Checks if this time range overlaps with another time range
+    /// </summary>
     public bool OverlapsWith(TimeRange other)
     {
-        if (other == null) return false;
-        
-        return !(string.Compare(End, other.Start, StringComparison.Ordinal) <= 0 || 
-                 string.Compare(Start, other.End, StringComparison.Ordinal) >= 0);
-    }
-    
-    public bool IsValid()
-    {
-        return string.Compare(Start, End, StringComparison.Ordinal) < 0;
+        return StartTime < other.EndTime && EndTime > other.StartTime;
     }
 }

@@ -5,7 +5,7 @@ namespace SmartEdu.Demy.Platform.API.Scheduling.Domain.Model.Commands;
 public record AddScheduleToWeeklyCommand(
     int WeeklyScheduleId,
     string DayOfWeek,
-    TimeRange TimeRange,
+    string StartTime,
+    string EndTime,
     int CourseId,
-    int ClassroomId,
-    int TeacherId);
+    int ClassroomId);

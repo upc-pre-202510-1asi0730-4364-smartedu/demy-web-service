@@ -1,6 +1,8 @@
-namespace SmartEdu.Demy.Platform.API.Scheduling.Domain.Model.Entities;
+using SmartEdu.Demy.Platform.API.Scheduling.Domain.Model.Commands;
 
-public class Classroom
+namespace SmartEdu.Demy.Platform.API.Scheduling.Domain.Model.Aggregates;
+
+public partial class Classroom
 {
     public int Id { get; private set; }
     public string Code { get; private set; }
@@ -19,6 +21,13 @@ public class Classroom
         Code = code ?? throw new ArgumentNullException(nameof(code));
         Capacity = capacity > 0 ? capacity : throw new ArgumentException("Capacity must be greater than 0", nameof(capacity));
         Campus = campus ?? throw new ArgumentNullException(nameof(campus));
+    }
+    
+    public Classroom(CreateClassroomCommand command)
+    {
+        Code = command.Code;
+        Capacity = command.Capacity;
+        Campus = command.Campus;
     }
     
     public void UpdateClassroom(string code, int capacity, string campus)
