@@ -1,8 +1,8 @@
 ﻿namespace SmartEdu.Demy.Platform.API.Enrollment.Interfaces.REST.Resources;
 
-public record StudentResource(
-    int Id,
-    string Name,
+public record UpdateStudentResource(
+    string FirstName,
+    string LastName,
     string Dni,
     string Sex,
     DateTime BirthDate,

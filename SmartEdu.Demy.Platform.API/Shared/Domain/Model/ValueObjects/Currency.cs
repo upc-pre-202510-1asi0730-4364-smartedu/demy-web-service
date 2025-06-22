@@ -1,4 +1,4 @@
-namespace SmartEdu.Demy.Platform.API.Shared.Domain.Model.ValueObjects;
+﻿namespace SmartEdu.Demy.Platform.API.Shared.Domain.Model.ValueObjects;
 
 /// <summary>
 /// Value Object representing a 3-letter ISO currency.
