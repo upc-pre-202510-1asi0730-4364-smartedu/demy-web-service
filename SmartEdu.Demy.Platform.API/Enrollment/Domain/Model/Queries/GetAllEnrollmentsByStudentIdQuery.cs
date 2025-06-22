@@ -1,3 +1,3 @@
 ﻿namespace SmartEdu.Demy.Platform.API.Enrollment.Domain.Model.Queries;
 
-public record GetStudentByIdQuery(int StudentId);
+public record GetAllEnrollmentsByStudentIdQuery(int studentId);

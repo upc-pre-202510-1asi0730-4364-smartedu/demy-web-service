@@ -1,25 +1,25 @@
-﻿using SmartEdu.Demy.Platform.API.Enrollment.Domain.Model.Entities;
+﻿using SmartEdu.Demy.Platform.API.Enrollment.Domain.Model.Aggregates;
 using SmartEdu.Demy.Platform.API.Enrollment.Domain.Model.Queries;
 using SmartEdu.Demy.Platform.API.Enrollment.Domain.Repositories;
 using SmartEdu.Demy.Platform.API.Enrollment.Domain.Services;
 
 namespace SmartEdu.Demy.Platform.API.Enrollment.Application.Internal.QueryServices;
 
-/// <summary>
-///     Implementation of the IStudentQueryService interface
-/// </summary>
-
-public class StudentQueryService : IStudentQueryService
+public class StudentQueryService(IStudentRepository studentRepository)
+    : IStudentQueryService
 {
-    private readonly IStudentRepository _studentRepository;
-
-    public StudentQueryService(IStudentRepository studentRepository)
-    {
-        _studentRepository = studentRepository;
-    }
-
     public async Task<Student?> Handle(GetStudentByIdQuery query)
     {
-        return await _studentRepository.FindByIdAsync((int)query.StudentId);
+        return await studentRepository.FindByIdAsync(query.StudentId);
+    }
+
+    public async Task<IEnumerable<Student>> Handle(GetAllStudentsQuery query)
+    {
+        return await studentRepository.ListAsync();
+    }
+
+    public async Task<Student?> Handle(GetStudentByDniQuery query)
+    {
+        return await studentRepository.FindByDniAsync(query.dni);
     }
 }

@@ -4,9 +4,11 @@ using SmartEdu.Demy.Platform.API.Scheduling.Domain.Model.Entities;
 using SmartEdu.Demy.Platform.API.Attendance.Domain.Model.Aggregates;
 using SmartEdu.Demy.Platform.API.Billing.Domain.Model.Aggregates;
 using SmartEdu.Demy.Platform.API.Billing.Domain.Model.Entities;
-using SmartEdu.Demy.Platform.API.Enrollment.Domain.Model.Entities;
 using SmartEdu.Demy.Platform.API.Iam.Domain.Model.Aggregates;
 using SmartEdu.Demy.Platform.API.Scheduling.Domain.Model.Aggregates;
+using SmartEdu.Demy.Platform.API.Shared.Infrastructure.Persistence.EFC.Configuration.Extensions;
+using SmartEdu.Demy.Platform.API.Enrollment.Domain.Model.Aggregates;
+using SmartEdu.Demy.Platform.API.Enrollment.Domain.Model.ValueObjects;
 using SmartEdu.Demy.Platform.API.Shared.Infrastructure.Persistence.EFC.Configuration.Extensions;
 
 namespace SmartEdu.Demy.Platform.API.Shared.Infrastructure.Persistence.EFC.Configuration;
@@ -53,38 +55,118 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
         
         // Enrollment Context
 
-        builder.Entity<Student>().HasKey(s => s.Id);
+        // ===== Student =====
+        builder.Entity<Student>(b =>
+        {
+            b.HasKey(s => s.Id);
+            b.Property(s => s.Id)
+             .IsRequired()
+             .ValueGeneratedOnAdd();
 
-        builder.Entity<Student>().Property(s => s.Id)
-            .IsRequired()
-            .ValueGeneratedOnAdd();
+            b.Property(s => s.BirthDate)
+             .IsRequired();
 
-        builder.Entity<Student>().Property(s => s.FirstName)
-            .IsRequired()
-            .HasMaxLength(100);
+            b.Property(s => s.Address)
+             .IsRequired()
+             .HasMaxLength(250);
 
-        builder.Entity<Student>().Property(s => s.LastName)
-            .IsRequired()
-            .HasMaxLength(100);
+            b.Property(s => s.Sex)
+             .IsRequired();
 
-        builder.Entity<Student>().Property(s => s.Dni)
-            .IsRequired()
-            .HasMaxLength(20);
+            b.OwnsOne(s => s.Name, name =>
+            {
+                name.Property(n => n.FirstName)
+                    .IsRequired()
+                    .HasMaxLength(100);
 
-        builder.Entity<Student>().Property(s => s.Sex)
-            .IsRequired()
-            .HasConversion<string>()  // Si ESex es enum, lo guardamos como string
-            .HasMaxLength(10);
+                name.Property(n => n.LastName)
+                    .IsRequired()
+                    .HasMaxLength(100);
+                name.WithOwner().HasForeignKey("id"); // igual que en TimeRange
+            });
 
-        builder.Entity<Student>().Property(s => s.BirthDate)
-            .IsRequired(false);
+            b.OwnsOne(s => s.Dni, dni =>
+            {
+                dni.Property(d => d.Value)
+                    .HasColumnName("dni")       // columna única para DNI
+                   .IsRequired()
+                   .HasMaxLength(8);
+                dni.HasIndex(d => d.Value).IsUnique();
+                dni.WithOwner().HasForeignKey("id"); // igual que en TimeRange
+            });
 
-        builder.Entity<Student>().Property(s => s.Address)
-            .IsRequired()
-            .HasMaxLength(255);
+            b.OwnsOne(s => s.PhoneNumber, phone =>
+            {
+                phone.Property(p => p.Value)
+                    .HasColumnName("phone_number")   // columna única para teléfono
+                     .IsRequired()
+                     .HasMaxLength(9);
+                phone.WithOwner().HasForeignKey("id"); // igual que en TimeRange
+            });
+        });
 
-        builder.Entity<Student>().Property(s => s.PhoneNumber)
-            .HasMaxLength(9);
+        // ===== AcademicPeriod =====
+        builder.Entity<AcademicPeriod>(b =>
+        {
+            b.HasKey(p => p.Id);
+            b.Property(p => p.Id)
+             .IsRequired()
+             .ValueGeneratedOnAdd();
+
+            b.Property(p => p.PeriodName)
+             .IsRequired()
+             .HasMaxLength(100);
+
+            b.Property(p => p.IsActive)
+             .IsRequired();
+
+            b.OwnsOne(p => p.PeriodDuration, duration =>
+            {
+                duration.Property(d => d.StartDate)
+                        .IsRequired();
+
+                duration.Property(d => d.EndDate)
+                        .IsRequired();
+
+                duration.WithOwner().HasForeignKey("id");  
+            });
+        });
+
+        // ===== Enrollment =====
+        builder.Entity<Enrollment.Domain.Model.Aggregates.Enrollment>(b =>
+        {
+            b.HasKey(e => e.Id);
+            b.Property(e => e.Id)
+             .IsRequired()
+             .ValueGeneratedOnAdd();
+
+            b.Property(e => e.Amount)
+             .IsRequired()
+             .HasPrecision(10, 2);
+
+            b.Property(e => e.Currency)
+             .IsRequired()
+             .HasMaxLength(10);
+
+            b.Property(e => e.EnrollmentStatus)
+             .IsRequired()
+             .HasMaxLength(50);
+
+            b.Property(e => e.PaymentStatus)
+             .IsRequired()
+             .HasMaxLength(50);
+
+            // Relaciones
+            b.HasOne<Student>()
+             .WithMany()
+             .HasForeignKey(e => e.StudentId)
+             .OnDelete(DeleteBehavior.Restrict);
+
+            b.HasOne<AcademicPeriod>()
+             .WithMany()
+             .HasForeignKey(e => e.PeriodId)
+             .OnDelete(DeleteBehavior.Restrict);
+        });
         
         // Attendance Context
         
@@ -163,6 +245,7 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
             entity.Property(e => e.Status).HasConversion<string>();
         });
         
+        // Convención de nombres snake_case
         builder.UseSnakeCaseNamingConvention();
     }
 }

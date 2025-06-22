@@ -1,23 +1,25 @@
-﻿using SmartEdu.Demy.Platform.API.Enrollment.Domain.Model.Entities;
+﻿using SmartEdu.Demy.Platform.API.Enrollment.Domain.Model.Aggregates;
 using SmartEdu.Demy.Platform.API.Enrollment.Interfaces.REST.Resources;
 
-namespace SmartEdu.Demy.Platform.API.Enrollment.Interfaces.REST.Transform;
-
-public static class StudentResourceFromEntityAssembler
+namespace SmartEdu.Demy.Platform.API.Enrollment.Interfaces.REST.Transform
 {
-    public static StudentResource ToResourceFromEntity(Student entity)
+    public static class StudentResourceFromEntityAssembler
     {
-        return new StudentResource(
-            entity.Id,
-            entity.FirstName,
-            entity.LastName,
-            entity.Dni,
-            entity.Sex.ToString(),
-            entity.BirthDate,
-            entity.Address,
-            entity.PhoneNumber,
-            entity.CreatedDate,
-            entity.UpdatedDate
-        );
+        public static StudentResource ToResourceFromEntity(Student entity)
+        {
+            return new StudentResource(
+                entity.Id,
+                // Asumiendo que PersonName tiene una propiedad FullName:
+                entity.Name.FullName,
+                // Extraemos el valor interno de Dni
+                entity.Dni.Value,
+                // Convertimos el enum a string
+                entity.Sex.ToString(),
+                entity.BirthDate,
+                entity.Address,
+                // Extraemos el valor interno de PhoneNumber
+                entity.PhoneNumber.Value
+            );
+        }
     }
 }
