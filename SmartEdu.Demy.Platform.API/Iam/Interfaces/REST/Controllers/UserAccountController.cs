@@ -1,5 +1,6 @@
 ﻿using System.Net.Mime;
 using Microsoft.AspNetCore.Mvc;
+using SmartEdu.Demy.Platform.API.Iam.Domain.Model.Queries;
 using SmartEdu.Demy.Platform.API.Iam.Domain.Model.ValueObjects;
 using Swashbuckle.AspNetCore.Annotations;
 using SmartEdu.Demy.Platform.API.Iam.Domain.Services;
@@ -20,7 +21,7 @@ public class UsersController(
     [SwaggerOperation(Summary = "Get user by ID", OperationId = "GetUserById")]
     public async Task<IActionResult> GetById(long id)
     {
-        var user = await queryService.FindByIdAsync(id);
+        var user = await queryService.Handle(new GetUserAccountByIdQuery(id));
         if (user is null)
             return NotFound(new { message = "User not found" });
 
@@ -50,7 +51,7 @@ public class UsersController(
     [SwaggerOperation(Summary = "Update admin", OperationId = "UpdateAdmin")]
     public async Task<IActionResult> UpdateAdmin(long id, [FromBody] UpdateAdminResource request)
     {
-        var user = await queryService.FindByIdAsync(id);
+        var user = await queryService.Handle(new GetUserAccountByIdQuery(id));
         if (user is null)
             return NotFound(new { message = "User not found" });
 
@@ -71,7 +72,7 @@ public class UsersController(
     [SwaggerOperation(Summary = "Update teacher", OperationId = "UpdateTeacher")]
     public async Task<IActionResult> UpdateTeacher(long id, [FromBody] UpdateTeacherResource request)
     {
-        var user = await queryService.FindByIdAsync(id);
+        var user = await queryService.Handle(new GetUserAccountByIdQuery(id));
         if (user is null)
             return NotFound(new { message = "User not found" });
 
@@ -92,7 +93,7 @@ public class UsersController(
     [SwaggerOperation(Summary = "Delete teacher", OperationId = "DeleteTeacher")]
     public async Task<IActionResult> DeleteTeacher(long id)
     {
-        var user = await queryService.FindByIdAsync(id);
+        var user = await queryService.Handle(new GetUserAccountByIdQuery(id));
         if (user is null)
             return NotFound(new { message = "User not found" });
 
