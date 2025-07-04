@@ -30,6 +30,7 @@ using SmartEdu.Demy.Platform.API.Iam.Application.Internal.QueryServices;
 using SmartEdu.Demy.Platform.API.Iam.Domain.Repositories;
 using SmartEdu.Demy.Platform.API.Iam.Domain.Services;
 using SmartEdu.Demy.Platform.API.Iam.Infrastructure.EFC;
+using SmartEdu.Demy.Platform.API.Iam.Infrastructure.Pipeline.Middleware.Extensions;
 using SmartEdu.Demy.Platform.API.Iam.Infrastructure.Tokens.JWT.Configuration;
 using SmartEdu.Demy.Platform.API.Iam.Infrastructure.Tokens.JWT.Services;
 using SmartEdu.Demy.Platform.API.Shared.Domain.Repositories;
@@ -198,11 +199,14 @@ app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
 // Enable CORS
 app.UseCors("AllowAllPolicy");
 
+// Add Authorization Middleware to Pipeline
+app.UseRequestAuthorization();
+
 // HTTPS Redirection
 app.UseHttpsRedirection();
 
 // Authorization
-// app.UseAuthorization();
+app.UseAuthorization();
 
 // Map controllers
 app.MapControllers();
