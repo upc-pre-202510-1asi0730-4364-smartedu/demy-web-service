@@ -12,6 +12,7 @@
         <PackageReference Include="EntityFrameworkCore.CreatedUpdatedDate" Version="8.0.0" />
         <!-- Naming convention conversion related packages -->
         <PackageReference Include="Humanizer" Version="2.14.1" />
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.6" />
         <!-- Entity Framework Core related packages -->
         <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.5" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="9.0.5" />
