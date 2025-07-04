@@ -4,7 +4,7 @@ namespace SmartEdu.Demy.Platform.API.Iam.Infrastructure.Pipeline.Middleware.Attr
 ///     Marks a controller action as allowing anonymous access, bypassing authorization.
 /// </summary>
 [AttributeUsage(AttributeTargets.Method)]
-public class AllowAnonymousAttribute
+public class AllowAnonymousAttribute : Attribute
 {
 
 }
