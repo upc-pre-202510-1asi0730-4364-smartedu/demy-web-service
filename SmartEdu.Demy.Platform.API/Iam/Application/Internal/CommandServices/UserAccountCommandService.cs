@@ -37,13 +37,17 @@ public sealed class UserAccountCommandService : IUserAccountCommandService
         return user;
     }
 
-    public UserAccount SignInAdmin(SignInAdminResource r)
+    public (UserAccount user, string token) SignInAdmin(SignInAdminResource r)
     {
         var user = _context.UserAccounts.FirstOrDefault(u => u.Email == r.Email);
         if (user == null || user.Role != Role.ADMIN)
             throw new Exception("Invalid credentials");
 
-        return user;
+        if (!_hashingService.VerifyPassword(r.Password, user.PasswordHash))
+            throw new Exception("Invalid credentials");
+
+        var token = _tokenService.GenerateToken(user);
+        return (user, token);
     }
 
     public UserAccount UpdateAdmin(long id, UpdateAdminResource r)
@@ -76,13 +80,17 @@ public sealed class UserAccountCommandService : IUserAccountCommandService
         return user;
     }
 
-    public UserAccount SignInTeacher(SignInTeacherResource r)
+    public (UserAccount user, string token) SignInTeacher(SignInTeacherResource r)
     {
         var user = _context.UserAccounts.FirstOrDefault(u => u.Email == r.Email);
         if (user == null || user.Role != Role.TEACHER)
             throw new Exception("Invalid credentials");
 
-        return user;
+        if (!_hashingService.VerifyPassword(r.Password, user.PasswordHash))
+            throw new Exception("Invalid credentials");
+
+        var token = _tokenService.GenerateToken(user);
+        return (user, token);
     }
 
     public UserAccount UpdateTeacher(long id, UpdateTeacherResource r)
@@ -96,7 +104,9 @@ public sealed class UserAccountCommandService : IUserAccountCommandService
 
         user.FullName = r.FullName;
         user.UpdateEmail(r.Email);
-        user.ChangePassword(Hash(r.NewPassword));
+
+        var hashedPassword = _hashingService.HashPassword(r.NewPassword);
+        user.ChangePassword(hashedPassword);
 
         _context.SaveChanges();
         return user;
@@ -118,7 +128,9 @@ public sealed class UserAccountCommandService : IUserAccountCommandService
         if (user == null)
             throw new Exception("User not found");
 
-        user.ChangePassword(Hash(r.NewPassword));
+        var hashedPassword = _hashingService.HashPassword(r.NewPassword);
+        user.ChangePassword(hashedPassword);
+
         _context.SaveChanges();
     }
 }
