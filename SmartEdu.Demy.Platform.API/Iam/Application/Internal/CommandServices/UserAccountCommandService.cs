@@ -1,4 +1,5 @@
-﻿using SmartEdu.Demy.Platform.API.Iam.Domain.Model.Aggregates;
+﻿using SmartEdu.Demy.Platform.API.Iam.Application.Internal.OutboundServices;
+using SmartEdu.Demy.Platform.API.Iam.Domain.Model.Aggregates;
 using SmartEdu.Demy.Platform.API.Iam.Domain.Model.ValueObjects;
 using SmartEdu.Demy.Platform.API.Iam.Domain.Services;
 using SmartEdu.Demy.Platform.API.Iam.Interfaces.REST.Resources;
@@ -8,10 +9,19 @@ namespace SmartEdu.Demy.Platform.API.Iam.Application.Internal.CommandServices;
 
 public sealed class UserAccountCommandService : IUserAccountCommandService
 {
-    private static string Hash(string p) => $"hashed-{p}";
-
     private readonly AppDbContext _context;
-    public UserAccountCommandService(AppDbContext context) => _context = context;
+    private readonly IHashingService _hashingService;
+    private readonly ITokenService _tokenService;
+
+    public UserAccountCommandService(
+        AppDbContext context,
+        IHashingService hashingService,
+        ITokenService tokenService)
+    {
+        _context = context;
+        _hashingService = hashingService;
+        _tokenService = tokenService;
+    }
 
     // ---------- ADMINS ----------
     public UserAccount SignUpAdmin(SignUpAdminResource r)
@@ -19,7 +29,9 @@ public sealed class UserAccountCommandService : IUserAccountCommandService
         if (_context.UserAccounts.Any(u => u.Email == r.Email))
             throw new Exception("Email already registered");
 
-        var user = new UserAccount(0, r.FullName, r.Email, Hash(r.Password), Role.ADMIN);
+        var hashedPassword = _hashingService.HashPassword(r.Password);
+
+        var user = new UserAccount(0, r.FullName, r.Email, hashedPassword, Role.ADMIN);
         _context.UserAccounts.Add(user);
         _context.SaveChanges();
         return user;
@@ -56,7 +68,9 @@ public sealed class UserAccountCommandService : IUserAccountCommandService
         if (_context.UserAccounts.Any(u => u.Email == r.Email))
             throw new Exception("Email already registered");
 
-        var user = new UserAccount(0, r.FullName, r.Email, Hash(r.Password), Role.TEACHER);
+        var hashedPassword = _hashingService.HashPassword(r.Password);
+
+        var user = new UserAccount(0, r.FullName, r.Email, hashedPassword, Role.TEACHER);
         _context.UserAccounts.Add(user);
         _context.SaveChanges();
         return user;
