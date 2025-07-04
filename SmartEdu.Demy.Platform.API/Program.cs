@@ -30,6 +30,7 @@ using SmartEdu.Demy.Platform.API.Iam.Application.Internal.QueryServices;
 using SmartEdu.Demy.Platform.API.Iam.Domain.Repositories;
 using SmartEdu.Demy.Platform.API.Iam.Domain.Services;
 using SmartEdu.Demy.Platform.API.Iam.Infrastructure.EFC;
+using SmartEdu.Demy.Platform.API.Iam.Infrastructure.Hashing.BCrypt.Services;
 using SmartEdu.Demy.Platform.API.Iam.Infrastructure.Pipeline.Middleware.Extensions;
 using SmartEdu.Demy.Platform.API.Iam.Infrastructure.Tokens.JWT.Configuration;
 using SmartEdu.Demy.Platform.API.Iam.Infrastructure.Tokens.JWT.Services;
@@ -168,6 +169,7 @@ builder.Services.Configure<TokenSettings>(builder.Configuration.GetSection("Toke
 
 // Dependency Injection for IAM Bounded Context
 builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddScoped<IHashingService, HashingService>();
 builder.Services.AddScoped<IUserAccountRepository, UserRepository>();
 builder.Services.AddScoped<IUserAccountQueryService, UserAccountQueryService>();
 builder.Services.AddScoped<IUserAccountCommandService, UserAccountCommandService>();
