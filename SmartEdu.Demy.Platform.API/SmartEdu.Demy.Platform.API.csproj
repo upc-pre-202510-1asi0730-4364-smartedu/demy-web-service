@@ -21,6 +21,7 @@
         <!-- Swagger related packages -->
         <PackageReference Include="Swashbuckle.AspNetCore" Version="8.1.4" />
         <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="8.1.4" />
+        <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.12.1" />
     </ItemGroup>
     
 </Project>
