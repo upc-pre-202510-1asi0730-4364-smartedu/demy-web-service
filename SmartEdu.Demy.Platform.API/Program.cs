@@ -31,6 +31,7 @@ using SmartEdu.Demy.Platform.API.Iam.Domain.Services;
 using SmartEdu.Demy.Platform.API.Iam.Infrastructure.EFC;
 using SmartEdu.Demy.Platform.API.Shared.Domain.Repositories;
 using SmartEdu.Demy.Platform.API.Shared.Infrastructure.Interfaces.ASP.Configuration;
+using SmartEdu.Demy.Platform.API.Shared.Infrastructure.Interfaces.ASP.Middleware;
 using SmartEdu.Demy.Platform.API.Shared.Infrastructure.Persistence.EFC.Configuration;
 using SmartEdu.Demy.Platform.API.Shared.Infrastructure.Persistence.EFC.Repositories;
 
@@ -155,16 +156,23 @@ using (var scope = app.Services.CreateScope())
     context.Database.EnsureCreated();
 }
 
+// Enable Swagger
 app.UseSwagger();
 app.UseSwaggerUI();
+
+// Global error handling middleware
+app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
 
 // Enable CORS
 app.UseCors("AllowAllPolicy");
 
+// HTTPS Redirection
 app.UseHttpsRedirection();
 
+// Authorization
 // app.UseAuthorization();
 
+// Map controllers
 app.MapControllers();
 
 app.Run();
