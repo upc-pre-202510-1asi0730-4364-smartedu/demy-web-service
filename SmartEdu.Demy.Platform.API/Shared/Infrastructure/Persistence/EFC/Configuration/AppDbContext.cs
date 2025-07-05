@@ -19,7 +19,7 @@ namespace SmartEdu.Demy.Platform.API.Shared.Infrastructure.Persistence.EFC.Confi
 public class AppDbContext(DbContextOptions options) : DbContext(options)
 {
     // Esto no debería ir aquí
-    public DbSet<UserAccount> UserAccounts { get; set; }
+    
     
     protected override void OnConfiguring(DbContextOptionsBuilder builder)
     {
@@ -237,6 +237,7 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
             timeRange.WithOwner().HasForeignKey("id"); // Use the same primary key as Schedule
         });
         
+        // ===== Iam =====
         builder.Entity<UserAccount>(entity =>
         {
             entity.ToTable("user_accounts");
@@ -244,7 +245,18 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
             entity.Property(e => e.Role).HasConversion<string>();
             entity.Property(e => e.Status).HasConversion<string>();
         });
-        
+        builder.Entity<Academy>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.AcademyName).IsRequired();
+            entity.Property(e => e.Ruc).IsRequired();
+            entity.Property(e => e.UserId).IsRequired();
+
+            entity.HasOne(a => a.User)
+                .WithMany()
+                .HasForeignKey(a => a.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
         // Convención de nombres snake_case
         builder.UseSnakeCaseNamingConvention();
     }
