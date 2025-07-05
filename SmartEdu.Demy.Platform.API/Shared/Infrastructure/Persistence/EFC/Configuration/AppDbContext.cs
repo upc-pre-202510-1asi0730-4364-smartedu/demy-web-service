@@ -205,7 +205,9 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
 
         builder.Entity<Schedule>().HasKey(s => s.Id);
         builder.Entity<Schedule>().Property(s => s.Id).IsRequired().ValueGeneratedOnAdd();
-        
+        builder.Entity<Schedule>().Property(s => s.TeacherId).IsRequired(); 
+        builder.Entity<Schedule>().Property(s => s.DayOfWeek).HasConversion<string>();
+
         // Configure foreign keys and navigation properties for Schedule
         builder.Entity<Schedule>()
             .HasOne(s => s.Course)
@@ -217,6 +219,12 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
             .HasOne(s => s.Classroom)
             .WithMany()
             .HasForeignKey(s => s.ClassroomId)
+            .OnDelete(DeleteBehavior.Restrict);
+        
+        builder.Entity<Schedule>()
+            .HasOne(s => s.Teacher)
+            .WithMany()
+            .HasForeignKey(s => s.TeacherId)
             .OnDelete(DeleteBehavior.Restrict);
         
         // Configure TimeRange as a value object with explicit column type mapping
