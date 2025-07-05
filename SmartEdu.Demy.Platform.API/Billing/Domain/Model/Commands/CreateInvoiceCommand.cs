@@ -4,5 +4,5 @@ public record CreateInvoiceCommand(
     string dni,
     decimal amount,
     string currency,
-    DateOnly date
+    DateOnly dueDate
 );
