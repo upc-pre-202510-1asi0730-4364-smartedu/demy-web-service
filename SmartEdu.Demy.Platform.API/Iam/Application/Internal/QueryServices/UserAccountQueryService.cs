@@ -31,4 +31,11 @@ public sealed class UserAccountQueryService : IUserAccountQueryService
         var all = await _repository.ListAsync();
         return all.Where(u => u.Role == Role.TEACHER);
     }
+    
+    public async Task<UserAccount?> GetByEmailAsync(string email)
+    {
+        return await _repository.FindByEmailAsync(email);
+    }
+
+
 }

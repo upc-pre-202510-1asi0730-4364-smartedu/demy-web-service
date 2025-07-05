@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SmartEdu.Demy.Platform.API.Iam.Domain.Model.Aggregates;
 using SmartEdu.Demy.Platform.API.Iam.Domain.Repositories;
+using SmartEdu.Demy.Platform.API.Shared.Domain.Repositories;
 using SmartEdu.Demy.Platform.API.Shared.Infrastructure.Persistence.EFC.Configuration;
 using SmartEdu.Demy.Platform.API.Shared.Infrastructure.Persistence.EFC.Repositories;
 
@@ -11,22 +12,31 @@ namespace SmartEdu.Demy.Platform.API.Iam.Infrastructure.EFC;
     *     Implementación concreta del repositorio de usuarios
     * </summary>
     */
-public class UserRepository : BaseRepository<UserAccount>, IUserAccountRepository
+public class UserAccountRepository : BaseRepository<UserAccount>, IUserAccountRepository
 {
     private readonly AppDbContext _context;
 
-    public UserRepository(AppDbContext context) : base(context)
+    public UserAccountRepository(AppDbContext context) : base(context)
     {
         _context = context;
     }
 
+    public async Task<bool> ExistsByIdAsync(long id)
+    {
+        return await _context.Set<UserAccount>().AnyAsync(u => u.UserId == id);
+    }
+    
     public async Task<UserAccount?> FindByUsernameAsync(string username)
     {
-        // Usamos Email como identificador, porque NO tienes Username en tu clase
         return await _context.Set<UserAccount>()
             .FirstOrDefaultAsync(u => u.Email == username);
     }
 
+    public async Task<UserAccount?> FindByIdAsync(long id)
+    {
+        return await _context.Set<UserAccount>().FindAsync(id);
+    }
+    
     public bool ExistsByUsername(string username)
     {
         return _context.Set<UserAccount>()
@@ -43,4 +53,16 @@ public class UserRepository : BaseRepository<UserAccount>, IUserAccountRepositor
     {
         return _context.Set<UserAccount>().Find(id);
     }
+    
+    public async Task<bool> ExistsByEmailAsync(string email)
+    {
+        return await _context.Set<UserAccount>().AnyAsync(u => u.Email == email);
+    }
+
+    public async Task<UserAccount?> FindByEmailAsync(string email)
+    {
+        return await _context.Set<UserAccount>().FirstOrDefaultAsync(u => u.Email == email);
+    }
+    
+
 }

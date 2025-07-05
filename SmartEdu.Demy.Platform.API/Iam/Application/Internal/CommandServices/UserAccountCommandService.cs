@@ -1,137 +1,124 @@
 ﻿using SmartEdu.Demy.Platform.API.Iam.Application.Internal.OutboundServices;
 using SmartEdu.Demy.Platform.API.Iam.Domain.Model.Aggregates;
+using SmartEdu.Demy.Platform.API.Iam.Domain.Model.Commands;
 using SmartEdu.Demy.Platform.API.Iam.Domain.Model.ValueObjects;
+using SmartEdu.Demy.Platform.API.Iam.Domain.Repositories;
 using SmartEdu.Demy.Platform.API.Iam.Domain.Services;
+using SmartEdu.Demy.Platform.API.Iam.Infrastructure.Persistence;
 using SmartEdu.Demy.Platform.API.Iam.Interfaces.REST.Resources;
+using SmartEdu.Demy.Platform.API.Shared.Domain.Repositories;
 using SmartEdu.Demy.Platform.API.Shared.Infrastructure.Persistence.EFC.Configuration;
 
 namespace SmartEdu.Demy.Platform.API.Iam.Application.Internal.CommandServices;
 
 public sealed class UserAccountCommandService : IUserAccountCommandService
 {
-    private readonly AppDbContext _context;
+    private readonly IUserAccountRepository _userRepository;
     private readonly IHashingService _hashingService;
     private readonly ITokenService _tokenService;
+    private readonly IUnitOfWork _unitOfWork;
 
     public UserAccountCommandService(
-        AppDbContext context,
+        IUserAccountRepository userRepository,
         IHashingService hashingService,
-        ITokenService tokenService)
+        ITokenService tokenService,
+        IUnitOfWork unitOfWork)
     {
-        _context = context;
+        _userRepository = userRepository;
         _hashingService = hashingService;
         _tokenService = tokenService;
+        _unitOfWork = unitOfWork;
     }
-
-    // ---------- ADMINS ----------
-    public UserAccount SignUpAdmin(SignUpAdminResource r)
+    
+    public async Task<UserAccount> Handle(SignUpAdminCommand command)
     {
-        if (_context.UserAccounts.Any(u => u.Email == r.Email))
+        if (await _userRepository.ExistsByEmailAsync(command.Email))
             throw new Exception("Email already registered");
 
-        var hashedPassword = _hashingService.HashPassword(r.Password);
+        var hashedPassword = _hashingService.HashPassword(command.Password);
+        var user = new UserAccount(0, command.FullName, command.Email, hashedPassword, Role.ADMIN, AccountStatus.ACTIVE);
 
-        var user = new UserAccount(0, r.FullName, r.Email, hashedPassword, Role.ADMIN);
-        _context.UserAccounts.Add(user);
-        _context.SaveChanges();
+        await _userRepository.AddAsync(user);
+        await _unitOfWork.CompleteAsync();
         return user;
     }
-
-    public (UserAccount user, string token) SignInAdmin(SignInAdminResource r)
+    public async Task<(UserAccount user, string token)> Handle(SignInAdminCommand command)
     {
-        var user = _context.UserAccounts.FirstOrDefault(u => u.Email == r.Email);
+        var user = await _userRepository.FindByEmailAsync(command.Email);
         if (user == null || user.Role != Role.ADMIN)
             throw new Exception("Invalid credentials");
 
-        if (!_hashingService.VerifyPassword(r.Password, user.PasswordHash))
+        if (!_hashingService.VerifyPassword(command.Password, user.PasswordHash))
             throw new Exception("Invalid credentials");
 
         var token = _tokenService.GenerateToken(user);
         return (user, token);
     }
-
-    public UserAccount UpdateAdmin(long id, UpdateAdminResource r)
+    public async Task<UserAccount> Handle(CreateTeacherCommand command)
     {
-        var user = _context.UserAccounts.FirstOrDefault(u => u.UserId == id);
-        if (user == null)
-            throw new Exception("User not found");
-
-        if (user.Role != Role.ADMIN)
-            throw new Exception("Only admins can be updated here");
-
-        user.FullName = r.FullName;
-        user.UpdateEmail(r.Email);
-
-        _context.SaveChanges();
-        return user;
-    }
-
-    // ---------- TEACHERS ----------
-    public UserAccount CreateTeacher(CreateTeacherResource r)
-    {
-        if (_context.UserAccounts.Any(u => u.Email == r.Email))
+        if (await _userRepository.ExistsByEmailAsync(command.Email))
             throw new Exception("Email already registered");
 
-        var hashedPassword = _hashingService.HashPassword(r.Password);
+        var hashedPassword = _hashingService.HashPassword(command.Password);
+        var user = new UserAccount(0, command.FullName, command.Email, hashedPassword, Role.TEACHER, AccountStatus.ACTIVE);
 
-        var user = new UserAccount(0, r.FullName, r.Email, hashedPassword, Role.TEACHER);
-        _context.UserAccounts.Add(user);
-        _context.SaveChanges();
+        await _userRepository.AddAsync(user);
+        await _unitOfWork.CompleteAsync();
+        return user;
+    }
+    public async Task<UserAccount> Handle(UpdateTeacherCommand command)
+    {
+        var user = await _userRepository.FindByIdAsync(command.Id);
+        if (user == null || user.Role != Role.TEACHER)
+            throw new Exception("Teacher not found");
+
+        user.FullName = command.FullName;
+        user.UpdateEmail(command.Email);
+        if (!string.IsNullOrWhiteSpace(command.NewPassword))
+        {
+            var hashedPassword = _hashingService.HashPassword(command.NewPassword);
+            user.ChangePassword(hashedPassword);
+        }
+
+        await _unitOfWork.CompleteAsync();
         return user;
     }
 
-    public (UserAccount user, string token) SignInTeacher(SignInTeacherResource r)
+    public async Task Handle(DeleteTeacherCommand command)
     {
-        var user = _context.UserAccounts.FirstOrDefault(u => u.Email == r.Email);
+        var user = await _userRepository.FindByIdAsync(command.Id);
+        if (user == null || user.Role != Role.TEACHER)
+            throw new Exception("Teacher not found");
+
+        _userRepository.Remove(user);
+        await _unitOfWork.CompleteAsync();
+    }
+    public async Task<(UserAccount user, string token)> Handle(SignInTeacherCommand command)
+    {
+        var user = await _userRepository.FindByEmailAsync(command.Email);
         if (user == null || user.Role != Role.TEACHER)
             throw new Exception("Invalid credentials");
 
-        if (!_hashingService.VerifyPassword(r.Password, user.PasswordHash))
+        if (!_hashingService.VerifyPassword(command.Password, user.PasswordHash))
             throw new Exception("Invalid credentials");
 
         var token = _tokenService.GenerateToken(user);
         return (user, token);
     }
-
-    public UserAccount UpdateTeacher(long id, UpdateTeacherResource r)
+    public async Task Handle(ResetPasswordCommand command)
     {
-        var user = _context.UserAccounts.FirstOrDefault(u => u.UserId == id);
+        var user = await _userRepository.FindByEmailAsync(command.Email);
         if (user == null)
             throw new Exception("User not found");
 
-        if (user.Role != Role.TEACHER)
-            throw new Exception("Only teachers can be updated here");
-
-        user.FullName = r.FullName;
-        user.UpdateEmail(r.Email);
-
-        var hashedPassword = _hashingService.HashPassword(r.NewPassword);
+        var hashedPassword = _hashingService.HashPassword(command.NewPassword);
         user.ChangePassword(hashedPassword);
 
-        _context.SaveChanges();
-        return user;
+        await _unitOfWork.CompleteAsync();
     }
 
-    public void DeleteTeacher(long id)
-    {
-        var user = _context.UserAccounts.FirstOrDefault(u => u.UserId == id && u.Role == Role.TEACHER);
-        if (user == null)
-            throw new Exception("Teacher not found");
 
-        _context.UserAccounts.Remove(user);
-        _context.SaveChanges();
-    }
 
-    public void ResetPassword(ResetPasswordResource r)
-    {
-        var user = _context.UserAccounts.FirstOrDefault(u => u.Email == r.Email);
-        if (user == null)
-            throw new Exception("User not found");
-
-        var hashedPassword = _hashingService.HashPassword(r.NewPassword);
-        user.ChangePassword(hashedPassword);
-
-        _context.SaveChanges();
-    }
 }
+
 
