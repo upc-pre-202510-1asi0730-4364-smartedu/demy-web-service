@@ -1,12 +1,10 @@
+using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Text.Json;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
-using System.ComponentModel.DataAnnotations;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
-namespace SmartEdu.Demy.Platform.API.Shared.Infrastructure.Interfaces.ASP.Middleware;
+namespace SmartEdu.Demy.Platform.API.Shared.Infrastructure.Pipeline.Middleware.Components;
 
 /// <summary>
 /// Middleware for globally handling unhandled exceptions in the HTTP request pipeline.

@@ -36,9 +36,9 @@ using SmartEdu.Demy.Platform.API.Iam.Infrastructure.Tokens.JWT.Configuration;
 using SmartEdu.Demy.Platform.API.Iam.Infrastructure.Tokens.JWT.Services;
 using SmartEdu.Demy.Platform.API.Shared.Domain.Repositories;
 using SmartEdu.Demy.Platform.API.Shared.Infrastructure.Interfaces.ASP.Configuration;
-using SmartEdu.Demy.Platform.API.Shared.Infrastructure.Interfaces.ASP.Middleware;
 using SmartEdu.Demy.Platform.API.Shared.Infrastructure.Persistence.EFC.Configuration;
 using SmartEdu.Demy.Platform.API.Shared.Infrastructure.Persistence.EFC.Repositories;
+using SmartEdu.Demy.Platform.API.Shared.Infrastructure.Pipeline.Middleware.Components;
 
 var builder = WebApplication.CreateBuilder(args);
 
