@@ -22,7 +22,7 @@ public partial class Invoice
 
     public string Currency => MonetaryAmount.Currency.Code;
 
-    public Invoice(string dni, string name, decimal amount, string currency, DateOnly dueDate, EInvoiceStatus status)
+    public Invoice(string dni, string name, decimal amount, string currency, DateOnly dueDate)
     {
         Dni = new Dni(dni);
         Name = name;
