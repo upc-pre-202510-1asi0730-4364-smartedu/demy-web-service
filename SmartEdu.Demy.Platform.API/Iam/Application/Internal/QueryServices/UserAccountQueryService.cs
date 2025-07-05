@@ -1,4 +1,5 @@
 ﻿using SmartEdu.Demy.Platform.API.Iam.Domain.Model.Aggregates;
+using SmartEdu.Demy.Platform.API.Iam.Domain.Model.Queries;
 using SmartEdu.Demy.Platform.API.Iam.Domain.Model.ValueObjects;
 using SmartEdu.Demy.Platform.API.Iam.Domain.Services;
 using SmartEdu.Demy.Platform.API.Iam.Domain.Repositories;
@@ -14,9 +15,9 @@ public sealed class UserAccountQueryService : IUserAccountQueryService
         _repository = repository;
     }
 
-    public async Task<UserAccount?> FindByIdAsync(long id)
+    public async Task<UserAccount?> Handle(GetUserAccountByIdQuery query)
     {
-        return await Task.FromResult(_repository.FindById(id)); // O usa directamente EF si es async
+        return await Task.FromResult(_repository.FindById(query.Id));
     }
 
     public async Task<IEnumerable<UserAccount>> FindAdminsAsync()

@@ -1,13 +1,16 @@
 ﻿using System.Net.Mime;
 using Microsoft.AspNetCore.Mvc;
+using SmartEdu.Demy.Platform.API.Iam.Domain.Model.Queries;
 using SmartEdu.Demy.Platform.API.Iam.Domain.Model.ValueObjects;
 using Swashbuckle.AspNetCore.Annotations;
 using SmartEdu.Demy.Platform.API.Iam.Domain.Services;
+using SmartEdu.Demy.Platform.API.Iam.Infrastructure.Pipeline.Middleware.Attributes;
 using SmartEdu.Demy.Platform.API.Iam.Interfaces.REST.Resources;
 using SmartEdu.Demy.Platform.API.Iam.Interfaces.REST.Transform;
 
 namespace SmartEdu.Demy.Platform.API.Iam.Interfaces.Rest.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("api/v1/users")]
 [Produces(MediaTypeNames.Application.Json)]
@@ -20,7 +23,7 @@ public class UsersController(
     [SwaggerOperation(Summary = "Get user by ID", OperationId = "GetUserById")]
     public async Task<IActionResult> GetById(long id)
     {
-        var user = await queryService.FindByIdAsync(id);
+        var user = await queryService.Handle(new GetUserAccountByIdQuery(id));
         if (user is null)
             return NotFound(new { message = "User not found" });
 
@@ -50,7 +53,7 @@ public class UsersController(
     [SwaggerOperation(Summary = "Update admin", OperationId = "UpdateAdmin")]
     public async Task<IActionResult> UpdateAdmin(long id, [FromBody] UpdateAdminResource request)
     {
-        var user = await queryService.FindByIdAsync(id);
+        var user = await queryService.Handle(new GetUserAccountByIdQuery(id));
         if (user is null)
             return NotFound(new { message = "User not found" });
 
@@ -71,7 +74,7 @@ public class UsersController(
     [SwaggerOperation(Summary = "Update teacher", OperationId = "UpdateTeacher")]
     public async Task<IActionResult> UpdateTeacher(long id, [FromBody] UpdateTeacherResource request)
     {
-        var user = await queryService.FindByIdAsync(id);
+        var user = await queryService.Handle(new GetUserAccountByIdQuery(id));
         if (user is null)
             return NotFound(new { message = "User not found" });
 
@@ -92,7 +95,7 @@ public class UsersController(
     [SwaggerOperation(Summary = "Delete teacher", OperationId = "DeleteTeacher")]
     public async Task<IActionResult> DeleteTeacher(long id)
     {
-        var user = await queryService.FindByIdAsync(id);
+        var user = await queryService.Handle(new GetUserAccountByIdQuery(id));
         if (user is null)
             return NotFound(new { message = "User not found" });
 
@@ -104,6 +107,7 @@ public class UsersController(
         return Ok(new { message = "Teacher deleted successfully" });
     }
 
+    [AllowAnonymous]
     [HttpPost("admins/sign-up")]
     [SwaggerOperation(Summary = "Admin sign-up", OperationId = "SignUpAdmin")]
     public IActionResult SignUpAdmin([FromBody] SignUpAdminResource request)
@@ -118,18 +122,20 @@ public class UsersController(
         });
     }
 
+    [AllowAnonymous]
     [HttpPost("admins/sign-in")]
     [SwaggerOperation(Summary = "Admin sign-in", OperationId = "SignInAdmin")]
     public IActionResult SignInAdmin([FromBody] SignInAdminResource request)
     {
         try
         {
-            var user = commandService.SignInAdmin(request);
+            var (user, token) = commandService.SignInAdmin(request);
             var resource = UserAccountResourceFromEntityAssembler.ToResource(user);
 
             return Ok(new
             {
                 message = "Admin login successful",
+                token,
                 user = resource
             });
         }
@@ -139,6 +145,7 @@ public class UsersController(
         }
     }
 
+    [AllowAnonymous]
     [HttpPost("teachers")]
     [SwaggerOperation(Summary = "Create new teacher", OperationId = "CreateTeacher")]
     public IActionResult CreateTeacher([FromBody] CreateTeacherResource request)
@@ -153,18 +160,20 @@ public class UsersController(
         });
     }
 
+    [AllowAnonymous]
     [HttpPost("teachers/sign-in")]
     [SwaggerOperation(Summary = "Teacher sign-in", OperationId = "SignInTeacher")]
     public IActionResult SignInTeacher([FromBody] SignInTeacherResource request)
     {
         try
         {
-            var user = commandService.SignInTeacher(request);
+            var (user, token) = commandService.SignInTeacher(request);
             var resource = UserAccountResourceFromEntityAssembler.ToResource(user);
 
             return Ok(new
             {
                 message = "Teacher login successful",
+                token,
                 user = resource
             });
         }

@@ -15,7 +15,7 @@ public partial class UserAccount
     [MaxLength(100)]
     public string Email { get; set; }
     
-    [MaxLength(50)]
+    [MaxLength(150)]
     [JsonIgnore] public string PasswordHash { get; set; }
     public Role Role { get;private set; }
     public AccountStatus Status { get; private set; }
