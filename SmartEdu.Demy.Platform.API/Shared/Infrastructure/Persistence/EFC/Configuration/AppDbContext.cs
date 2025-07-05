@@ -1,4 +1,3 @@
-using System;
 using EntityFrameworkCore.CreatedUpdatedDate.Extensions;
 using Microsoft.EntityFrameworkCore;
 using SmartEdu.Demy.Platform.API.Scheduling.Domain.Model.Entities;
