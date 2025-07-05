@@ -101,7 +101,6 @@ public partial class WeeklySchedule
     
     public IEnumerable<Schedule> GetSchedulesForTeacherId(int teacherId)
     {
-        // TODO: Implement when teacher functionality is added
         // This will need to be implemented when we add the teacher relationship
         // For now, return empty list
         return Enumerable.Empty<Schedule>();

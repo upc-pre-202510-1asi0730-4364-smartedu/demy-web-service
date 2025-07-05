@@ -18,7 +18,6 @@ public class Schedule
     public Course Course { get; private set; }
     public Classroom Classroom { get; private set; }
     
-    // TODO: Add TeacherId when teacher functionality is implemented
     // public int TeacherId { get; private set; }
     // public Teacher Teacher { get; private set; }
 
