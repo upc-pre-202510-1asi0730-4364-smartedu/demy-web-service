@@ -173,7 +173,15 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
         builder.Entity<ClassSession>().HasKey(c => c.Id );
         builder.Entity<ClassSession>().Property(c => c.Id).IsRequired().ValueGeneratedOnAdd();
         builder.Entity<ClassSession>().Property(c => c.CourseId).IsRequired();
-        builder.Entity<ClassSession>().Property(c => c.Date).IsRequired();
+        builder.Entity<ClassSession>()
+            .Property(c => c.Date)
+            .IsRequired()
+            .HasColumnType("date") // le decimos que es un DATE, no DATETIME
+            .HasConversion(
+                d => d.ToDateTime(TimeOnly.MinValue),   // al guardar
+                dt => DateOnly.FromDateTime(dt)         // al leer
+            );
+
 
         builder.Entity<ClassSession>().OwnsMany(c => c.Attendance, a =>
         {
