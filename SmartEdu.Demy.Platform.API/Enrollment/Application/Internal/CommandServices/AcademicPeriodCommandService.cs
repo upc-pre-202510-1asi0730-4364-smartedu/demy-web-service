@@ -6,11 +6,20 @@ using SmartEdu.Demy.Platform.API.Shared.Domain.Repositories;
 
 namespace SmartEdu.Demy.Platform.API.Enrollment.Application.Internal.CommandServices;
 
+/// <summary>
+/// Service that handles commands for creating, updating and deleting academic periods.
+/// </summary>
+/// <remarks>Paul Sulca</remarks>
 public class AcademicPeriodCommandService(
     IAcademicPeriodRepository academicPeriodRepository,
     IUnitOfWork unitOfWork)
     : IAcademicPeriodCommandService
 {
+    /// <summary>
+    /// Handles the creation of a new academic period.
+    /// </summary>
+    /// <param name="command">Command containing data to create the academic period</param>
+    /// <returns>The created AcademicPeriod or null if an error occurred</returns>
     public async Task<AcademicPeriod?> Handle(CreateAcademicPeriodCommand command)
     {
         var academicPeriod = new AcademicPeriod(command);
@@ -22,15 +31,19 @@ public class AcademicPeriodCommandService(
         }
         catch (Exception e)
         {
-            // Log the exception e
-            return null;
+            throw new Exception("Error creating academic period: " + e.Message);
         }
     }
 
+    /// <summary>
+    /// Handles the update of an existing academic period.
+    /// </summary>
+    /// <param name="command">Command containing updated data</param>
+    /// <returns>The updated AcademicPeriod or null if not found or on error</returns>
     public async Task<AcademicPeriod?> Handle(UpdateAcademicPeriodCommand command)
     {
         var academicPeriod = await academicPeriodRepository.FindByIdAsync(command.Id);
-        if (academicPeriod == null) return null;
+        if (academicPeriod == null) throw new Exception("Academic period not found");
 
         try
         {
@@ -46,16 +59,20 @@ public class AcademicPeriodCommandService(
         }
         catch (Exception e)
         {
-            // Log the exception e
-            return null;
+            throw new Exception($"WeeklySchedule with name '{command.Id}' is invalid.");
         }
     }
 
+    /// <summary>
+    /// Handles the deletion of an academic period.
+    /// </summary>
+    /// <param name="command">Command specifying the academic period to delete</param>
+    /// <returns>True if deleted successfully; false otherwise</returns>
     public async Task<bool> Handle(DeleteAcademicPeriodCommand command)
     {
         var academicPeriod = await academicPeriodRepository.FindByIdAsync(command.AcademicPeriodId);
-        if (academicPeriod == null) return false;
-
+        if (academicPeriod == null)  throw new Exception("Academic period not found.");
+        
         try
         {
             academicPeriodRepository.Remove(academicPeriod);
