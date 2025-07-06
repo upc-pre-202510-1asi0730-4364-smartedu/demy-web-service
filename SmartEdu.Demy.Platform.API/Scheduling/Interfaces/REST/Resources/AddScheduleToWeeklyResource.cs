@@ -5,4 +5,5 @@ public record AddScheduleToWeeklyResource(
     string StartTime,
     string EndTime,
     int CourseId,
-    int ClassroomId);
+    int ClassroomId,
+    int TeacherId);

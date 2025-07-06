@@ -146,6 +146,10 @@ builder.Services.AddScoped<IWeeklyScheduleCommandService, WeeklyScheduleCommandS
 builder.Services.AddScoped<IWeeklyScheduleQueryService, WeeklyScheduleQueryService>();
 builder.Services.AddScoped<IWeeklyScheduleRepository, WeeklyScheduleRepository>();
 
+
+builder.Services.AddScoped<IScheduleQueryService, ScheduleQueryService>();
+builder.Services.AddScoped<IScheduleRepository, ScheduleRepository>();
+
 // Enrollment Bounded Context Dependency Injection Configuration
 // AcademicPeriod
 builder.Services.AddScoped<IAcademicPeriodCommandService, AcademicPeriodCommandService>();

@@ -1,8 +1,10 @@
 using SmartEdu.Demy.Platform.API.Scheduling.Domain.Model.Aggregates;
 using SmartEdu.Demy.Platform.API.Scheduling.Domain.Model.Commands;
+using SmartEdu.Demy.Platform.API.Scheduling.Domain.Model.Entities;
 using SmartEdu.Demy.Platform.API.Scheduling.Domain.Repositories;
 using SmartEdu.Demy.Platform.API.Scheduling.Domain.Services;
 using SmartEdu.Demy.Platform.API.Shared.Domain.Repositories;
+using DayOfWeek = SmartEdu.Demy.Platform.API.Scheduling.Domain.Model.ValueObjects.DayOfWeek;
 
 namespace SmartEdu.Demy.Platform.API.Scheduling.Application.Internal.CommandServices;
 
@@ -11,6 +13,7 @@ namespace SmartEdu.Demy.Platform.API.Scheduling.Application.Internal.CommandServ
 /// </summary>
 public class WeeklyScheduleCommandService(
     IWeeklyScheduleRepository weeklyScheduleRepository,
+    IScheduleRepository scheduleRepository,
     IUnitOfWork unitOfWork) 
     : IWeeklyScheduleCommandService
 {
@@ -24,7 +27,7 @@ public class WeeklyScheduleCommandService(
             await unitOfWork.CompleteAsync();
             return weeklySchedule;
         }
-        catch (Exception e)
+        catch 
         {
             // Log error
             return null;
@@ -64,7 +67,7 @@ public class WeeklyScheduleCommandService(
             await unitOfWork.CompleteAsync();
             return weeklySchedule;
         }
-        catch (Exception e)
+        catch 
         {
             // Log error
             return null;
@@ -84,10 +87,49 @@ public class WeeklyScheduleCommandService(
             await unitOfWork.CompleteAsync();
             return weeklySchedule;
         }
-        catch (Exception e)
+        catch 
         {
             // Log error
             return null;
         }
     }
+    
+    public async Task<bool> Handle(DeleteWeeklyScheduleCommand command)
+    {
+        var weeklySchedule = await weeklyScheduleRepository.FindByIdAsync(command.WeeklyScheduleId);
+        if (weeklySchedule == null) return false;
+    
+        try
+        {
+            weeklyScheduleRepository.Remove(weeklySchedule);
+            await unitOfWork.CompleteAsync();
+            return true;
+        }
+        catch 
+        {
+            // Log error
+            return false;
+        }
+    }
+    
+    public async Task<Schedule?> Handle(UpdateScheduleCommand command)
+    {
+        var schedule = await scheduleRepository.FindByIdAsync(command.ScheduleId);
+        if (schedule == null)
+        {
+            throw new ArgumentException($"Schedule with id {command.ScheduleId} not found");
+        }
+
+        schedule.UpdateSchedule(
+            command.StartTime,
+            command.EndTime,
+            Enum.Parse<DayOfWeek>(command.DayOfWeek, true),
+            command.ClassroomId
+        );
+        
+        scheduleRepository.Update(schedule);
+        await unitOfWork.CompleteAsync();
+        return schedule;
+    }
+
 }

@@ -1,3 +1,4 @@
+using SmartEdu.Demy.Platform.API.Iam.Domain.Model.Aggregates;
 using SmartEdu.Demy.Platform.API.Scheduling.Domain.Model.Aggregates;
 using SmartEdu.Demy.Platform.API.Scheduling.Domain.Model.ValueObjects;
 using DayOfWeek = SmartEdu.Demy.Platform.API.Scheduling.Domain.Model.ValueObjects.DayOfWeek;
@@ -13,46 +14,43 @@ public class Schedule
     // Foreign Keys
     public int CourseId { get; private set; }
     public int ClassroomId { get; private set; }
+    public long TeacherId { get; private set; }
     
     // Navigation Properties
     public Course Course { get; private set; }
     public Classroom Classroom { get; private set; }
     
-    // public int TeacherId { get; private set; }
-    // public Teacher Teacher { get; private set; }
+    public UserAccount Teacher { get; private set; }
 
     public Schedule()
     {
     }
+    
 
-    public Schedule(TimeRange timeRange, DayOfWeek dayOfWeek, int courseId, int classroomId)
+    public Schedule(TimeRange timeRange, DayOfWeek dayOfWeek, int courseId, int classroomId, long teacherId)
     {
         TimeRange = timeRange ?? throw new ArgumentNullException(nameof(timeRange));
         DayOfWeek = dayOfWeek;
         CourseId = courseId;
         ClassroomId = classroomId;
-        
+        TeacherId = teacherId;
+
         ValidateSchedule();
     }
+    
 
-    public Schedule(string startTime, string endTime, DayOfWeek dayOfWeek, int courseId, int classroomId)
-        : this(new TimeRange(startTime, endTime), dayOfWeek, courseId, classroomId)
+    public void UpdateSchedule(TimeRange timeRange, DayOfWeek dayOfWeek, int classroomId)
     {
-    }
-
-    public void UpdateSchedule(TimeRange timeRange, DayOfWeek dayOfWeek, int courseId, int classroomId)
-    {
-        TimeRange = timeRange ?? throw new ArgumentNullException(nameof(timeRange));
+        TimeRange = new TimeRange(timeRange.StartTime, timeRange.EndTime);
         DayOfWeek = dayOfWeek;
-        CourseId = courseId;
         ClassroomId = classroomId;
         
         ValidateSchedule();
     }
 
-    public void UpdateSchedule(string startTime, string endTime, DayOfWeek dayOfWeek, int courseId, int classroomId)
+    public void UpdateSchedule(string startTime, string endTime, DayOfWeek dayOfWeek, int classroomId)
     {
-        UpdateSchedule(new TimeRange(startTime, endTime), dayOfWeek, courseId, classroomId);
+        UpdateSchedule(new TimeRange(startTime, endTime), dayOfWeek, classroomId);
     }
 
     /// <summary>

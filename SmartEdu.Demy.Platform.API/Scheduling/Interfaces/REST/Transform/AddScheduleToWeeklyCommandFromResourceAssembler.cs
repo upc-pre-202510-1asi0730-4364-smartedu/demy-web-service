@@ -22,6 +22,7 @@ public static class AddScheduleToWeeklyCommandFromResourceAssembler
             resource.StartTime,
             resource.EndTime,
             resource.CourseId,
-            resource.ClassroomId);
+            resource.ClassroomId,
+            resource.TeacherId);
     }
 }
