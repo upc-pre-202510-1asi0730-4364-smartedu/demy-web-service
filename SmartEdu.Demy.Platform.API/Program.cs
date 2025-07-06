@@ -206,13 +206,13 @@ app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
 app.UseCors("AllowAllPolicy");
 
 // Add Authorization Middleware to Pipeline
-app.UseRequestAuthorization();
+//app.UseRequestAuthorization();
 
 // HTTPS Redirection
 app.UseHttpsRedirection();
 
 // Authorization
-app.UseAuthorization();
+//app.UseAuthorization();
 
 // Map controllers
 app.MapControllers();

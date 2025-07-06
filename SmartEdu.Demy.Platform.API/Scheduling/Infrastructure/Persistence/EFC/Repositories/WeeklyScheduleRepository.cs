@@ -37,4 +37,27 @@ public class WeeklyScheduleRepository(AppDbContext context)
     {
         return Context.Set<WeeklySchedule>().FirstOrDefault(p => p.Name == name);
     }
+
+    /// <summary>
+    /// Override FindByIdAsync to include Schedules relationship
+    /// </summary>
+    /// <param name="id">The WeeklySchedule ID</param>
+    /// <returns>WeeklySchedule entity with Schedules included</returns>
+    public async Task<WeeklySchedule?> FindByIdAsync(int id)
+    {
+        return await Context.Set<WeeklySchedule>()
+            .Include(ws => ws.Schedules)
+            .FirstOrDefaultAsync(ws => ws.Id == id);
+    }
+
+    /// <summary>
+    /// Override ListAsync to include Schedules relationship
+    /// </summary>
+    /// <returns>All WeeklySchedule entities with their Schedules included</returns>
+    public async Task<IEnumerable<WeeklySchedule>> ListAsync()
+    {
+        return await Context.Set<WeeklySchedule>()
+            .Include(ws => ws.Schedules)
+            .ToListAsync();
+    }
 }
