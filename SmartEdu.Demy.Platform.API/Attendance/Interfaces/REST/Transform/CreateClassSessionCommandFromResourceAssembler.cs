@@ -10,7 +10,7 @@ public static class CreateClassSessionCommandFromResourceAssembler
     new CreateClassSessionCommand(resource.CourseId
         , resource.Date,
         resource.Attendance
-            .Select(r=> new AttendanceRecord(r.StudentId,Enum.Parse<AttendanceStatus>(r.Status)))
+            .Select(r => new AttendanceDraft(r.Dni, Enum.Parse<AttendanceStatus>(r.Status)))
         .ToList()
         );
 }
