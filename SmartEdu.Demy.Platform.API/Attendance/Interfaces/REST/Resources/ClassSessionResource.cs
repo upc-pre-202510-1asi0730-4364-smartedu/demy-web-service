@@ -1,3 +1,3 @@
 ﻿namespace SmartEdu.Demy.Platform.API.Attendance.Interfaces.REST.Resources;
 
-public record ClassSessionResource(int Id, long CourseId, DateTime Date, List<AttendanceRecordResource> Attendance);
+public record ClassSessionResource(long Id, long CourseId, DateOnly Date, List<AttendanceRecordResource> Attendance);
