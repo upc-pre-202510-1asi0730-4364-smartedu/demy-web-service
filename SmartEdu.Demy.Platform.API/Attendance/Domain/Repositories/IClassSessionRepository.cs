@@ -11,5 +11,5 @@ public interface IClassSessionRepository : IBaseRepository<ClassSession>
     /// <param name="courseId">ID del curso</param>
     /// <param name="date">Fecha de la sesión</param>
     /// <returns>True si existe</returns>
-    Task<ClassSession> FindByCourseAndDateAsync(long courseId, DateTime date); 
+    Task<ClassSession> FindByCourseAndDateAsync(long courseId, DateOnly date); 
 }
