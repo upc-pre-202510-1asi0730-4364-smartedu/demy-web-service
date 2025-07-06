@@ -177,11 +177,18 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
 
         builder.Entity<ClassSession>().OwnsMany(c => c.Attendance, a =>
         {
-            a.WithOwner().HasForeignKey("ClassSessionId");;
-            a.Property(ar => ar.StudentId).HasColumnName("StudentId").IsRequired().ValueGeneratedNever();
-            a.Property(ar => ar.Status).HasColumnName("Status").IsRequired();
-            
-            a.HasKey("ClassSessionId","StudentId");
+            a.WithOwner().HasForeignKey("ClassSessionId");
+
+            a.Property(ar => ar.Dni)
+                .HasColumnName("Dni")
+                .IsRequired();
+
+            a.Property(ar => ar.Status)
+                .HasColumnName("Status")
+                .IsRequired()
+                .HasConversion<string>();
+
+            a.HasKey("ClassSessionId", "Dni");
         });
         
         // Scheduling Context
