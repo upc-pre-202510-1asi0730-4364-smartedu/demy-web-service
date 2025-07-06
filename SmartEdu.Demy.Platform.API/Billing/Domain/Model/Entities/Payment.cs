@@ -16,6 +16,8 @@ public class Payment
     
     public DateTime PaidAt { get; private set; }
 
+    private Payment() {}
+
     public Payment(decimal amount, string currency, string method, DateTime paidAt, int? invoiceId = null)
     {
         InvoiceId = invoiceId;
