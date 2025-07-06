@@ -13,7 +13,7 @@ namespace SmartEdu.Demy.Platform.API.Billing.Interfaces.REST.Controllers;
 [Route("api/v1/students/{dni}/[controller]")]
 [Produces(MediaTypeNames.Application.Json)]
 [SwaggerTag("Available Invoice Endpoints.")]
-public class InvoiceController(
+public class InvoicesController(
         IInvoiceCommandService invoiceCommandService,
         IInvoiceQueryService invoiceQueryService
     ) : ControllerBase
