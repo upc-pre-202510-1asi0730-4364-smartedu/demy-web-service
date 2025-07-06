@@ -59,7 +59,7 @@ public class ClassSessionController(IClassSessionCommandService classSessionComm
     [FromQuery] DateOnly startDate,
     [FromQuery] DateOnly endDate)
   {
-    // ✅ Usar el query correcto que devuelve List<ClassSession>
+    // Use the correct query that returns List<ClassSession>
     var query = new GetClassSessionsByCourseAndDateRangeQuery(courseId,dni ,startDate, endDate);
 
     var sessions = await classSessionQueryService.Handle(query); // ✅ Este devuelve List<ClassSession>
@@ -67,7 +67,7 @@ public class ClassSessionController(IClassSessionCommandService classSessionComm
     if (sessions == null || sessions.Count == 0)
       return NotFound("No class sessions found.");
 
-    // ✅ El assembler filtra los AttendanceRecord por DNI y usa el Date de cada sesión
+    // The assembler filters AttendanceRecords by DNI and uses the Date of each session
     var resource = ClassSessionReportFromEntityAssembler.ToResourceFromEntities(courseId, dni, sessions);
 
     return Ok(resource);
