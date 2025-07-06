@@ -55,7 +55,6 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
         
         // Enrollment Context
 
-        // ===== Student =====
         builder.Entity<Student>(b =>
         {
             b.HasKey(s => s.Id);
@@ -71,7 +70,7 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
              .HasMaxLength(250);
 
             b.Property(s => s.Sex)
-             .IsRequired();
+             .IsRequired().HasConversion<string>();
 
             b.OwnsOne(s => s.Name, name =>
             {
@@ -82,30 +81,29 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
                 name.Property(n => n.LastName)
                     .IsRequired()
                     .HasMaxLength(100);
-                name.WithOwner().HasForeignKey("id"); // igual que en TimeRange
+                name.WithOwner().HasForeignKey("id"); 
             });
 
             b.OwnsOne(s => s.Dni, dni =>
             {
                 dni.Property(d => d.Value)
-                    .HasColumnName("dni")       // columna única para DNI
+                    .HasColumnName("dni")      
                    .IsRequired()
                    .HasMaxLength(8);
                 dni.HasIndex(d => d.Value).IsUnique();
-                dni.WithOwner().HasForeignKey("id"); // igual que en TimeRange
+                dni.WithOwner().HasForeignKey("id"); 
             });
 
             b.OwnsOne(s => s.PhoneNumber, phone =>
             {
                 phone.Property(p => p.Value)
-                    .HasColumnName("phone_number")   // columna única para teléfono
+                    .HasColumnName("phone_number")   
                      .IsRequired()
                      .HasMaxLength(9);
-                phone.WithOwner().HasForeignKey("id"); // igual que en TimeRange
+                phone.WithOwner().HasForeignKey("id"); 
             });
         });
 
-        // ===== AcademicPeriod =====
         builder.Entity<AcademicPeriod>(b =>
         {
             b.HasKey(p => p.Id);
@@ -132,7 +130,6 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
             });
         });
 
-        // ===== Enrollment =====
         builder.Entity<Enrollment.Domain.Model.Aggregates.Enrollment>(b =>
         {
             b.HasKey(e => e.Id);
@@ -156,7 +153,6 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
              .IsRequired()
              .HasMaxLength(50);
 
-            // Relaciones
             b.HasOne<Student>()
              .WithMany()
              .HasForeignKey(e => e.StudentId)
