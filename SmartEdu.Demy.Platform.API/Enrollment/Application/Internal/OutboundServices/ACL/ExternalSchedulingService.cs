@@ -6,19 +6,8 @@ namespace SmartEdu.Demy.Platform.API.Enrollment.Application.Internal.OutboundSer
     /// Service that retrieves data from the Scheduling module.
     /// </summary>
     /// <remarks>Paul Sulca</remarks>
-    public class ExternalSchedulingService
+    public class ExternalSchedulingService(ISchedulingsContextFacade schedulingsContextFacade)
     {
-        private readonly ISchedulingsContextFacade schedulingsContextFacade;
-
-        /// <summary>
-        /// Initializes a new instance of the ExternalSchedulingService class.
-        /// </summary>
-        /// <param name="schedulingsContextFacade">Facade to access Scheduling operations</param>
-        public ExternalSchedulingService(ISchedulingsContextFacade schedulingsContextFacade)
-        {
-            this.schedulingsContextFacade = schedulingsContextFacade;
-        }
-
         /// <summary>
         /// Gets the ID of a weekly schedule by its name.
         /// </summary>
