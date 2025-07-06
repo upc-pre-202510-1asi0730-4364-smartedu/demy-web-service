@@ -9,7 +9,7 @@ public class ClassSessionResourceFromEntityAssembler
     new ClassSessionResource(entity.Id, 
         entity.CourseId, entity.Date,
         entity.Attendance
-            .Select(a=> new AttendanceRecordResource(a.StudentId,a.Status.ToString()))
+            .Select(a => new AttendanceRecordResource(a.Dni, a.Status.ToString()))
             .ToList()
         );
 }
