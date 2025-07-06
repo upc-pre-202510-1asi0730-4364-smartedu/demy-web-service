@@ -1,4 +1,5 @@
 ﻿using SmartEdu.Demy.Platform.API.Attendance.Domain.Model.Aggregates;
+using SmartEdu.Demy.Platform.API.Attendance.Domain.Model.Entities;
 using SmartEdu.Demy.Platform.API.Shared.Domain.Repositories;
 
 namespace SmartEdu.Demy.Platform.API.Attendance.Domain.Repositories;
@@ -12,4 +13,9 @@ public interface IClassSessionRepository : IBaseRepository<ClassSession>
     /// <param name="date">Fecha de la sesión</param>
     /// <returns>True si existe</returns>
     Task<ClassSession> FindByCourseAndDateAsync(long courseId, DateOnly date); 
+    
+    Task<List<AttendanceRecord>> FindAttendanceRecordsByDniCourseAndDateRangeAsync(long courseId, string dni, DateOnly startDate, DateOnly endDate);
+
+    Task<List<ClassSession>> FindSessionsByCourseAndDateRangeAsync(long courseId, DateOnly startDate, DateOnly endDate);
+
 }
