@@ -134,6 +134,10 @@ builder.Services.AddScoped<IInvoiceCommandService, InvoiceCommandService>();
 builder.Services.AddScoped<IInvoiceQueryService, InvoiceQueryService>();
 builder.Services.AddScoped<ExternalEnrollmentsService>();
 
+builder.Services.AddScoped<IFinancialTransactionRepository, FinancialTransactionRepository>();
+builder.Services.AddScoped<IFinancialTransactionCommandService, FinancialTransactionCommandService>();
+builder.Services.AddScoped<IFinancialTransactionQueryService, FinancialTransactionQueryService>();
+
 // Attendance Bounded Context Dependency Injection Configuration
 builder.Services.AddScoped<IClassSessionRepository, ClassSessionRepository>();
 builder.Services.AddScoped<IClassSessionCommandService, ClassSessionCommandService>();
