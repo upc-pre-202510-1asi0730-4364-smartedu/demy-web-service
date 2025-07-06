@@ -147,11 +147,13 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
 
             b.Property(e => e.EnrollmentStatus)
              .IsRequired()
-             .HasMaxLength(50);
+             .HasMaxLength(10)
+             .HasConversion<string>();
 
             b.Property(e => e.PaymentStatus)
              .IsRequired()
-             .HasMaxLength(50);
+             .HasMaxLength(10)
+             .HasConversion<string>();
 
             b.HasOne<Student>()
              .WithMany()
