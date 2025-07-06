@@ -8,4 +8,8 @@ public interface IUserAccountQueryService
     Task<UserAccount?> Handle(GetUserAccountByIdQuery query);
     Task<IEnumerable<UserAccount>> FindAdminsAsync();
     Task<IEnumerable<UserAccount>> FindTeachersAsync();
+    
+    Task<UserAccount> GetByEmailAsync(string email);
+    
+
 }
