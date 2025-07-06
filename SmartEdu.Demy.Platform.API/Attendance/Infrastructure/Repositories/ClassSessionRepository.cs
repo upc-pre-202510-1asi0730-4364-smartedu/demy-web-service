@@ -11,7 +11,7 @@ public class ClassSessionRepository(AppDbContext context) : BaseRepository<Class
 
 {
     ///<inheritdoc />
-    public async Task<ClassSession> FindByCourseAndDateAsync(long courseId, DateTime date)
+    public async Task<ClassSession> FindByCourseAndDateAsync(long courseId, DateOnly date)
     {
       return await Context.Set<ClassSession>().FirstOrDefaultAsync(x => x.CourseId == courseId && x.Date == date);  
     }
