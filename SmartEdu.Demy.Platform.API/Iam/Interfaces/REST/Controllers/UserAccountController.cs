@@ -145,8 +145,8 @@ public class UsersController(
     [SwaggerOperation(Summary = "Reset user password", OperationId = "ResetPassword")]
     public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordResource request)
     {
-        if (request.NewPassword != request.RepeatPassword)
-            return BadRequest(new { message = "Passwords do not match" });
+        if (string.IsNullOrWhiteSpace(request.Email) || string.IsNullOrWhiteSpace(request.NewPassword))
+            return BadRequest(new { message = "Email and password are required." });
 
         var command = new ResetPasswordCommand(request.Email, request.NewPassword);
         await commandService.Handle(command);
