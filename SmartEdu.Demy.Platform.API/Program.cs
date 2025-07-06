@@ -14,6 +14,9 @@ using SmartEdu.Demy.Platform.API.Attendance.Application.Internal.QueryServices;
 using SmartEdu.Demy.Platform.API.Attendance.Domain.Repositories;
 using SmartEdu.Demy.Platform.API.Attendance.Domain.Services;
 using SmartEdu.Demy.Platform.API.Attendance.Infrastructure.Repositories;
+using SmartEdu.Demy.Platform.API.Billing.Application.Internal.CommandServices;
+using SmartEdu.Demy.Platform.API.Billing.Application.Internal.OutboundServices.ACL;
+using SmartEdu.Demy.Platform.API.Enrollment.Application.ACL;
 using SmartEdu.Demy.Platform.API.Shared.Domain.Repositories;
 using SmartEdu.Demy.Platform.API.Shared.Infrastructure.Interfaces.ASP.Configuration;
 using SmartEdu.Demy.Platform.API.Shared.Infrastructure.Persistence.EFC.Configuration;
@@ -24,6 +27,7 @@ using SmartEdu.Demy.Platform.API.Enrollment.Domain.Repositories;
 using SmartEdu.Demy.Platform.API.Enrollment.Domain.Services;
 using SmartEdu.Demy.Platform.API.Enrollment.Application.Internal.QueryServices;
 using SmartEdu.Demy.Platform.API.Enrollment.Infrastructure.Persistence.EFC.Repositories;
+using SmartEdu.Demy.Platform.API.Enrollment.Interfaces.ACL;
 using SmartEdu.Demy.Platform.API.Iam.Application.Internal.CommandServices;
 using SmartEdu.Demy.Platform.API.Iam.Application.Internal.OutboundServices;
 using SmartEdu.Demy.Platform.API.Iam.Application.Internal.QueryServices;
@@ -126,7 +130,9 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 // Billing Bounded Context Dependency Injection Configuration
 builder.Services.AddScoped<IInvoiceRepository, InvoiceRepository>();
+builder.Services.AddScoped<IInvoiceCommandService, InvoiceCommandService>();
 builder.Services.AddScoped<IInvoiceQueryService, InvoiceQueryService>();
+builder.Services.AddScoped<ExternalEnrollmentsService>();
 
 // Attendance Bounded Context Dependency Injection Configuration
 builder.Services.AddScoped<IClassSessionRepository, ClassSessionRepository>();
@@ -156,6 +162,7 @@ builder.Services.AddScoped<IAcademicPeriodRepository, AcademicPeriodRepository>(
 builder.Services.AddScoped<IEnrollmentCommandService, EnrollmentCommandService>();
 builder.Services.AddScoped<IEnrollmentQueryService, EnrollmentQueryService>();
 builder.Services.AddScoped<IEnrollmentRepository, EnrollmentRepository>();
+builder.Services.AddScoped<IEnrollmentsContextFacade, EnrollmentsContextFacade>();
 
 // Student
 builder.Services.AddScoped<IStudentCommandService, StudentCommandService>();
