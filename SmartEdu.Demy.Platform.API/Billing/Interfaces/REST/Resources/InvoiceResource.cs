@@ -6,6 +6,6 @@ public record InvoiceResource(
     string Name,
     decimal Amount,
     string Currency,
-    DateTime DueDate,
+    DateOnly DueDate,
     string Status
 );
