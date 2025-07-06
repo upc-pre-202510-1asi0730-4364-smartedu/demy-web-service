@@ -17,6 +17,8 @@ public partial class FinancialTransaction
 
     public Payment Payment { get; private set; }
 
+    private FinancialTransaction() { }
+
     public FinancialTransaction(string type, string category, string concept, DateTime date, Payment payment)
     {
         Type = Enum.Parse<ETransactionType>(type, true);
