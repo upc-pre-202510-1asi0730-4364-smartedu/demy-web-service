@@ -5,7 +5,7 @@ namespace SmartEdu.Demy.Platform.API.Billing.Domain.Services;
 
 public interface IFinancialTransactionQueryService
 {
-    Task<FinancialTransaction> Handle(GetFinancialTransactionByIdQuery query);
+    Task<FinancialTransaction?> Handle(GetFinancialTransactionByIdQuery query);
 
     Task<IEnumerable<FinancialTransaction>> Handle(GetAllFinancialTransactionsQuery query);
 }

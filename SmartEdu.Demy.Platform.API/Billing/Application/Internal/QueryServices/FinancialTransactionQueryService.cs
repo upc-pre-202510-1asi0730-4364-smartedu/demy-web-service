@@ -7,13 +7,13 @@ namespace SmartEdu.Demy.Platform.API.Billing.Application.Internal.QueryServices;
 
 public class FinancialTransactionQueryService(IFinancialTransactionRepository financialTransactionRepository) : IFinancialTransactionQueryService
 {
-    public async Task<FinancialTransaction> Handle(GetFinancialTransactionByIdQuery query)
+    public async Task<FinancialTransaction?> Handle(GetFinancialTransactionByIdQuery query)
     {
-        return await financialTransactionRepository.FindByIdAsync(query.FinancialTransactionId);
+        return await financialTransactionRepository.FindByIdWithPaymentAsync(query.FinancialTransactionId);
     }
 
     public async Task<IEnumerable<FinancialTransaction>> Handle(GetAllFinancialTransactionsQuery query)
     {
-        return await financialTransactionRepository.ListAsync();
+        return await financialTransactionRepository.ListWithPaymentAsync();
     }
 }
