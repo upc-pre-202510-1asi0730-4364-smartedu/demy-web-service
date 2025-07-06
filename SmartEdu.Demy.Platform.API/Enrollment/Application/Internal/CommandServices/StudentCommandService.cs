@@ -32,8 +32,7 @@ public class StudentCommandService(
         }
         catch (Exception e)
         {
-            // Log exception e
-            return null;
+            throw new Exception("Error creating student", e);
         }
     }
 
