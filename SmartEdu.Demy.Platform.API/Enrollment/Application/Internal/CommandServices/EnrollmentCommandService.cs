@@ -35,6 +35,11 @@ public class EnrollmentCommandService(
         var currency = command.Currency;
         var enrollmentStatus = Enum.Parse<EEnrollmentStatus>(command.EnrollmentStatus, ignoreCase: true);
         var paymentStatus = Enum.Parse<EPaymentStatus>(command.PaymentStatus, ignoreCase: true);
+
+        if (amount <= 0)
+        {
+            throw new Exception($"Amount of {amount} is invalid.");
+        }
         
         var enrollment = new Domain.Model.Aggregates.Enrollment(
             studentId,
