@@ -10,10 +10,12 @@ using SmartEdu.Demy.Platform.API.Scheduling.Domain.Repositories;
 using SmartEdu.Demy.Platform.API.Scheduling.Domain.Services;
 using SmartEdu.Demy.Platform.API.Scheduling.Infrastructure.Persistence.EFC.Repositories;
 using SmartEdu.Demy.Platform.API.Attendance.Application.Internal.CommandServices;
+using SmartEdu.Demy.Platform.API.Attendance.Application.Internal.OutboundServices.ACL;
 using SmartEdu.Demy.Platform.API.Attendance.Application.Internal.QueryServices;
 using SmartEdu.Demy.Platform.API.Attendance.Domain.Repositories;
 using SmartEdu.Demy.Platform.API.Attendance.Domain.Services;
 using SmartEdu.Demy.Platform.API.Attendance.Infrastructure.Repositories;
+using SmartEdu.Demy.Platform.API.Enrollment.Application.ACL;
 using SmartEdu.Demy.Platform.API.Shared.Domain.Repositories;
 using SmartEdu.Demy.Platform.API.Shared.Infrastructure.Interfaces.ASP.Configuration;
 using SmartEdu.Demy.Platform.API.Shared.Infrastructure.Persistence.EFC.Configuration;
@@ -24,6 +26,7 @@ using SmartEdu.Demy.Platform.API.Enrollment.Domain.Repositories;
 using SmartEdu.Demy.Platform.API.Enrollment.Domain.Services;
 using SmartEdu.Demy.Platform.API.Enrollment.Application.Internal.QueryServices;
 using SmartEdu.Demy.Platform.API.Enrollment.Infrastructure.Persistence.EFC.Repositories;
+using SmartEdu.Demy.Platform.API.Enrollment.Interfaces.ACL;
 using SmartEdu.Demy.Platform.API.Iam.Application.Internal.CommandServices;
 using SmartEdu.Demy.Platform.API.Iam.Application.Internal.OutboundServices;
 using SmartEdu.Demy.Platform.API.Iam.Application.Internal.QueryServices;
@@ -173,6 +176,11 @@ builder.Services.AddScoped<IHashingService, HashingService>();
 builder.Services.AddScoped<IUserAccountRepository, UserRepository>();
 builder.Services.AddScoped<IUserAccountQueryService, UserAccountQueryService>();
 builder.Services.AddScoped<IUserAccountCommandService, UserAccountCommandService>();
+
+//Dependency Injection for Attendance Bounded Context
+builder.Services.AddScoped<ExternalEnrollmentServiceForAttendance>();
+builder.Services.AddScoped<IEnrollmentsContextFacade, EnrollmentsContextFacade>();
+
 
 // Add this to bind to Railway's assigned PORT
 if (builder.Environment.IsProduction())
