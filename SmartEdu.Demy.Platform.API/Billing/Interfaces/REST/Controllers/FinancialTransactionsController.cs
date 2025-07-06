@@ -17,6 +17,7 @@ public class FinancialTransactionsController(
     IFinancialTransactionQueryService financialTransactionQueryService
     ) : ControllerBase
 {
+    [HttpGet("{id}")]
     public async Task<IActionResult> GetFinancialTransactionById([FromRoute] int financialTransactionId)
     {
         var getFinancialTransactionByIdQuery = new GetFinancialTransactionByIdQuery(financialTransactionId);
