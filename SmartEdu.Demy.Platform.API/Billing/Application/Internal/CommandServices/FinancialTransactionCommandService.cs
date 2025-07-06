@@ -1,6 +1,7 @@
 using SmartEdu.Demy.Platform.API.Billing.Domain.Model.Aggregates;
 using SmartEdu.Demy.Platform.API.Billing.Domain.Model.Commands;
 using SmartEdu.Demy.Platform.API.Billing.Domain.Model.Entities;
+using SmartEdu.Demy.Platform.API.Billing.Domain.Model.ValueObjects;
 using SmartEdu.Demy.Platform.API.Billing.Domain.Repositories;
 using SmartEdu.Demy.Platform.API.Billing.Domain.Services;
 using SmartEdu.Demy.Platform.API.Shared.Domain.Repositories;
@@ -13,10 +14,13 @@ public class FinancialTransactionCommandService(
 {
     public async Task<FinancialTransaction?> Handle(CreateFinancialTransactionCommand command)
     {
+        if (!Enum.TryParse<EPaymentMethod>(command.method, out var methodEnum))
+            throw new ArgumentException($"Método de pago inválido: {command.method}");
+
         var payment = new Payment(
             command.amount,
             command.currency,
-            command.method,
+            methodEnum.ToString(),
             command.paidAt,
             command.invoiceId
         );
@@ -41,7 +45,6 @@ public class FinancialTransactionCommandService(
         }
     }
 
-    // Transactional
     public async Task<FinancialTransaction?> Handle(RegisterPaymentCommand command)
     {
         var invoice = await invoiceRepository.FindByIdAsync(command.invoiceId);
@@ -67,7 +70,7 @@ public class FinancialTransactionCommandService(
         try
         {
             invoice.MarkAsPaid();
-            await invoiceRepository.AddAsync(invoice);
+            invoiceRepository.Update(invoice);
             await financialTransactionRepository.AddAsync(financialTransaction);
             await unitOfWork.CompleteAsync();
             return financialTransaction;
