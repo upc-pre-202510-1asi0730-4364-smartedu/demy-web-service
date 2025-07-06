@@ -10,6 +10,7 @@ namespace SmartEdu.Demy.Platform.API.Enrollment.Interfaces.REST.Transform
             return new CreateEnrollmentCommand(
                 resource.StudentId,
                 resource.AcademicPeriodId,
+                resource.WeeklyScheduleName,
                 resource.Amount,
                 resource.Currency,
                 resource.EnrollmentStatus,

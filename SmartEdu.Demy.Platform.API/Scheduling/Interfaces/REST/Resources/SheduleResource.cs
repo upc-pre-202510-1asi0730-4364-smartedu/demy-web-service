@@ -6,5 +6,6 @@ public record ScheduleResource(
     string EndTime,
     string DayOfWeek,
     int CourseId,
-    int ClassroomId
+    int ClassroomId,
+    long TeacherId
     );

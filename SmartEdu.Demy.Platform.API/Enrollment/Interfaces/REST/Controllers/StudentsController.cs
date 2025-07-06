@@ -9,15 +9,23 @@ using SmartEdu.Demy.Platform.API.Enrollment.Interfaces.REST.Transform;
 
 namespace SmartEdu.Demy.Platform.API.Enrollment.Interfaces.REST.Controllers;
 
+/// <summary>
+/// REST controller that provides endpoints to manage students.
+/// </summary>
+/// <remarks>Paul Sulca</remarks>
 [ApiController]
 [Route("api/v1/[controller]")]
 [Produces(MediaTypeNames.Application.Json)]
 [SwaggerTag("Available Student Endpoints.")]
-public class StudentController(
+public class StudentsController(
     IStudentCommandService studentCommandService,
     IStudentQueryService studentQueryService)
     : ControllerBase
 {
+    /// <summary>
+    /// Retrieves all students.
+    /// </summary>
+    /// <returns>A list of student resources.</returns>
     [HttpGet]
     [SwaggerOperation("Get All Students", "Get all students.", OperationId = "GetAllStudents")]
     [SwaggerResponse(200, "The students were found and returned.", typeof(IEnumerable<StudentResource>))]
@@ -29,6 +37,11 @@ public class StudentController(
         return Ok(resources);
     }
 
+    /// <summary>
+    /// Retrieves a student by their ID.
+    /// </summary>
+    /// <param name="studentId">The student ID</param>
+    /// <returns>The student resource if found, or 404 if not found.</returns>
     [HttpGet("{studentId:int}")]
     [SwaggerOperation("Get Student by Id", "Get a student by its unique identifier.", OperationId = "GetStudentById")]
     [SwaggerResponse(200, "The student was found and returned.", typeof(StudentResource))]
@@ -42,6 +55,11 @@ public class StudentController(
         return Ok(resource);
     }
 
+    /// <summary>
+    /// Retrieves a student by their DNI.
+    /// </summary>
+    /// <param name="dni">The student's DNI</param>
+    /// <returns>The student resource if found, or 404 if not found.</returns>
     [HttpGet("dni/{dni}")]
     [SwaggerOperation("Get Student by DNI", "Get a student by DNI.", OperationId = "GetStudentByDni")]
     [SwaggerResponse(200, "The student was found and returned.", typeof(StudentResource))]
@@ -55,6 +73,11 @@ public class StudentController(
         return Ok(resource);
     }
 
+    /// <summary>
+    /// Creates a new student.
+    /// </summary>
+    /// <param name="resource">The student data</param>
+    /// <returns>The created student resource, or 400 if creation failed.</returns>
     [HttpPost]
     [SwaggerOperation("Create Student", "Create a new student.", OperationId = "CreateStudent")]
     [SwaggerResponse(201, "The student was created.", typeof(StudentResource))]
@@ -68,6 +91,12 @@ public class StudentController(
         return CreatedAtAction(nameof(GetById), new { studentId = student.Id }, response);
     }
 
+    /// <summary>
+    /// Updates an existing student.
+    /// </summary>
+    /// <param name="studentId">The student ID</param>
+    /// <param name="resource">The updated student data</param>
+    /// <returns>The updated student resource, or 404 if not found.</returns>
     [HttpPut("{studentId:int}")]
     [SwaggerOperation("Update Student", "Update an existing student.", OperationId = "UpdateStudent")]
     [SwaggerResponse(200, "The student was updated.", typeof(StudentResource))]
@@ -82,6 +111,11 @@ public class StudentController(
         return Ok(response);
     }
 
+    /// <summary>
+    /// Deletes a student by their ID.
+    /// </summary>
+    /// <param name="studentId">The student ID</param>
+    /// <returns>200 if deleted, or 404 if not found.</returns>
     [HttpDelete("{studentId:int}")]
     [SwaggerOperation("Delete Student", "Delete an existing student.", OperationId = "DeleteStudent")]
     [SwaggerResponse(200, "The student was deleted.")]

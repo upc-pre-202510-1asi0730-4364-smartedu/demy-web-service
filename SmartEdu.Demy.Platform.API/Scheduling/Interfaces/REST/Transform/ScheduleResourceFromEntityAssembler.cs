@@ -16,6 +16,7 @@ public static class ScheduleResourceFromEntityAssembler
             entity.TimeRange.EndTime.ToString(),
             entity.DayOfWeek.ToString(),
             entity.CourseId,
-            entity.ClassroomId);
+            entity.ClassroomId,
+            entity.TeacherId);
     }
 }

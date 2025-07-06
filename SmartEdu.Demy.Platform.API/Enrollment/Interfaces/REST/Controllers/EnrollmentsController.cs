@@ -9,15 +9,23 @@ using SmartEdu.Demy.Platform.API.Enrollment.Interfaces.REST.Transform;
 
 namespace SmartEdu.Demy.Platform.API.Enrollment.Interfaces.REST.Controllers;
 
+/// <summary>
+/// REST controller that provides endpoints to manage enrollments.
+/// </summary>
+/// <remarks>Paul Sulca</remarks>
 [ApiController]
 [Route("api/v1/[controller]")]
 [Produces(MediaTypeNames.Application.Json)]
 [SwaggerTag("Available Enrollment Endpoints.")]
-public class EnrollmentController(
+public class EnrollmentsController(
     IEnrollmentCommandService enrollmentCommandService,
     IEnrollmentQueryService enrollmentQueryService)
     : ControllerBase
 {
+    /// <summary>
+    /// Retrieves all enrollments.
+    /// </summary>
+    /// <returns>A list of enrollment resources.</returns>
     [HttpGet]
     [SwaggerOperation("Get All Enrollments", "Get all enrollments.", OperationId = "GetAllEnrollments")]
     [SwaggerResponse(200, "The enrollments were found and returned.", typeof(IEnumerable<EnrollmentResource>))]
@@ -29,6 +37,11 @@ public class EnrollmentController(
         return Ok(resources);
     }
 
+    /// <summary>
+    /// Retrieves an enrollment by its ID.
+    /// </summary>
+    /// <param name="enrollmentId">The enrollment ID</param>
+    /// <returns>The enrollment resource if found, or 404 if not found.</returns>
     [HttpGet("{enrollmentId:int}")]
     [SwaggerOperation("Get Enrollment by Id", "Get an enrollment by its unique identifier.", OperationId = "GetEnrollmentById")]
     [SwaggerResponse(200, "The enrollment was found and returned.", typeof(EnrollmentResource))]
@@ -42,6 +55,11 @@ public class EnrollmentController(
         return Ok(resource);
     }
 
+    /// <summary>
+    /// Retrieves all enrollments for a given student ID.
+    /// </summary>
+    /// <param name="studentId">The student ID</param>
+    /// <returns>A list of enrollment resources for the student.</returns>
     [HttpGet("student/{studentId:int}")]
     [SwaggerOperation("Get Enrollments by Student Id", "Get all enrollments for a given student id.", OperationId = "GetEnrollmentsByStudentId")]
     [SwaggerResponse(200, "The enrollments were found and returned.", typeof(IEnumerable<EnrollmentResource>))]
@@ -53,6 +71,11 @@ public class EnrollmentController(
         return Ok(resources);
     }
 
+    /// <summary>
+    /// Retrieves all enrollments for a student by their DNI.
+    /// </summary>
+    /// <param name="dni">The student's DNI</param>
+    /// <returns>A list of enrollment resources for the student.</returns>
     [HttpGet("student/dni/{dni}")]
     [SwaggerOperation("Get Enrollments by Student DNI", "Get all enrollments for a student using their DNI.", OperationId = "GetEnrollmentsByStudentDni")]
     [SwaggerResponse(200, "The enrollments were found and returned.", typeof(IEnumerable<EnrollmentResource>))]
@@ -64,6 +87,11 @@ public class EnrollmentController(
         return Ok(resources);
     }
 
+    /// <summary>
+    /// Creates a new enrollment.
+    /// </summary>
+    /// <param name="resource">The enrollment data</param>
+    /// <returns>The created enrollment resource, or 400 if creation failed.</returns>
     [HttpPost]
     [SwaggerOperation("Create Enrollment", "Create a new enrollment.", OperationId = "CreateEnrollment")]
     [SwaggerResponse(201, "The enrollment was created.", typeof(EnrollmentResource))]
@@ -77,6 +105,12 @@ public class EnrollmentController(
         return CreatedAtAction(nameof(GetById), new { enrollmentId = enrollment.Id }, response);
     }
 
+    /// <summary>
+    /// Updates an existing enrollment.
+    /// </summary>
+    /// <param name="enrollmentId">The enrollment ID</param>
+    /// <param name="resource">The updated enrollment data</param>
+    /// <returns>The updated enrollment resource, or 404 if not found.</returns>
     [HttpPut("{enrollmentId:int}")]
     [SwaggerOperation("Update Enrollment", "Update an existing enrollment.", OperationId = "UpdateEnrollment")]
     [SwaggerResponse(200, "The enrollment was updated.", typeof(EnrollmentResource))]
@@ -91,6 +125,11 @@ public class EnrollmentController(
         return Ok(response);
     }
 
+    /// <summary>
+    /// Deletes an enrollment by its ID.
+    /// </summary>
+    /// <param name="enrollmentId">The enrollment ID</param>
+    /// <returns>200 if deleted, or 404 if not found.</returns>
     [HttpDelete("{enrollmentId:int}")]
     [SwaggerOperation("Delete Enrollment", "Delete an existing enrollment.", OperationId = "DeleteEnrollment")]
     [SwaggerResponse(200, "The enrollment was deleted.")]

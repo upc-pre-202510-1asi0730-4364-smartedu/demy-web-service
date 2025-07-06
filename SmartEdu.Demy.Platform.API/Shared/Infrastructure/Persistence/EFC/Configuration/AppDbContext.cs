@@ -124,7 +124,6 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
 
         // Enrollment Context
 
-        // ===== Student =====
         builder.Entity<Student>(b =>
         {
             b.HasKey(s => s.Id);
@@ -140,9 +139,8 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
                 .HasMaxLength(250);
 
             b.Property(s => s.Sex)
-                .IsRequired();
+                .IsRequired().HasConversion<string>();
 
-            // Name (Value Object)
             b.OwnsOne(s => s.Name, name =>
             {
                 name.WithOwner().HasForeignKey("Id");
@@ -156,20 +154,17 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
                     .HasMaxLength(100);
             });
 
-            // Dni (Value Object)
             b.OwnsOne(s => s.Dni, dni =>
             {
                 dni.WithOwner().HasForeignKey("Id");
 
                 dni.Property(d => d.Value)
                     .HasColumnName("dni")
-                    .IsRequired()
-                    .HasMaxLength(8);
-
+                   .IsRequired()
+                   .HasMaxLength(8);
                 dni.HasIndex(d => d.Value).IsUnique();
             });
 
-            // PhoneNumber (Value Object)
             b.OwnsOne(s => s.PhoneNumber, phone =>
             {
                 phone.WithOwner().HasForeignKey("Id");
@@ -181,7 +176,6 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
             });
         });
 
-        // ===== AcademicPeriod =====
         builder.Entity<AcademicPeriod>(b =>
         {
             b.HasKey(p => p.Id);
@@ -208,7 +202,6 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
             });
         });
 
-        // ===== Enrollment =====
         builder.Entity<Enrollment.Domain.Model.Aggregates.Enrollment>(b =>
         {
             b.HasKey(e => e.Id);
@@ -226,13 +219,14 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
 
             b.Property(e => e.EnrollmentStatus)
              .IsRequired()
-             .HasMaxLength(50);
+             .HasMaxLength(10)
+             .HasConversion<string>();
 
             b.Property(e => e.PaymentStatus)
              .IsRequired()
-             .HasMaxLength(50);
+             .HasMaxLength(10)
+             .HasConversion<string>();
 
-            // Relaciones
             b.HasOne<Student>()
              .WithMany()
              .HasForeignKey(e => e.StudentId)
@@ -281,6 +275,8 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
 
         builder.Entity<Schedule>().HasKey(s => s.Id);
         builder.Entity<Schedule>().Property(s => s.Id).IsRequired().ValueGeneratedOnAdd();
+        builder.Entity<Schedule>().Property(s => s.TeacherId).IsRequired();
+        builder.Entity<Schedule>().Property(s => s.DayOfWeek).HasConversion<string>();
 
         // Configure foreign keys and navigation properties for Schedule
         builder.Entity<Schedule>()
@@ -293,6 +289,12 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
             .HasOne(s => s.Classroom)
             .WithMany()
             .HasForeignKey(s => s.ClassroomId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.Entity<Schedule>()
+            .HasOne(s => s.Teacher)
+            .WithMany()
+            .HasForeignKey(s => s.TeacherId)
             .OnDelete(DeleteBehavior.Restrict);
 
         // Configure TimeRange as a value object with explicit column type mapping
