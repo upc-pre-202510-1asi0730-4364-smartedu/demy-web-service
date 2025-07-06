@@ -4,7 +4,7 @@ using SmartEdu.Demy.Platform.API.Scheduling.Interfaces.ACL;
 
 namespace SmartEdu.Demy.Platform.API.Scheduling.Application.ACL;
 
-public class SchedulingContextFacade(IWeeklyScheduleQueryService weeklyScheduleQueryService): ISchedulingContextFacade
+public class SchedulingsContextFacade(IWeeklyScheduleQueryService weeklyScheduleQueryService): ISchedulingsContextFacade
 {
     // inheritedDoc
     public async Task<int> FetchWeeklyScheduleIdByName(string name)

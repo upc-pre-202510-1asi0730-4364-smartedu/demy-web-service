@@ -1,6 +1,6 @@
 namespace SmartEdu.Demy.Platform.API.Scheduling.Interfaces.ACL;
 
-public interface ISchedulingContextFacade
+public interface ISchedulingsContextFacade
 {
     Task<int> FetchWeeklyScheduleIdByName(string name);
 }
