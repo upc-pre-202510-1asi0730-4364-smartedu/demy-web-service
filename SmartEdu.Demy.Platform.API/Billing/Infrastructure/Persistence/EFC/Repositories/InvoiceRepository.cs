@@ -12,7 +12,7 @@ public class InvoiceRepository(AppDbContext context) : BaseRepository<Invoice>(c
     public async Task<IEnumerable<Invoice>> FindByDniAsync(Dni dni)
     {
         return await Context.Set<Invoice>()
-            .Where(invoice => invoice.Dni == dni)
+            .Where(invoice => invoice.Dni.Value == dni.Value)
             .ToListAsync();
     }
 }

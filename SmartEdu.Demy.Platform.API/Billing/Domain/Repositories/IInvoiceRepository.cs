@@ -7,4 +7,6 @@ namespace SmartEdu.Demy.Platform.API.Billing.Domain.Repositories;
 public interface IInvoiceRepository : IBaseRepository<Invoice>
 {
     Task<IEnumerable<Invoice>> FindByDniAsync(Dni dni);
+
+    new void Update(Invoice invoice);
 }
