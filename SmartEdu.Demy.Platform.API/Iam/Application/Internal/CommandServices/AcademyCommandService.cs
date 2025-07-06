@@ -8,12 +8,21 @@ using SmartEdu.Demy.Platform.API.Shared.Infrastructure.Persistence.EFC.Configura
 
 namespace SmartEdu.Demy.Platform.API.Iam.Application.Internal.CommandServices;
 
+/// <summary>
+/// Application service responsible for handling academy creation commands.
+/// </summary>
 public sealed class AcademyCommandService : IAcademyCommandService
 {
     private readonly IAcademyRepository _academyRepository;
     private readonly IUserAccountRepository _userRepository;
     private readonly IUnitOfWork _unitOfWork;
-
+    
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AcademyCommandService"/> class.
+    /// </summary>
+    /// <param name="academyRepository">The repository for academy data operations.</param>
+    /// <param name="userRepository">The repository for user account validation.</param>
+    /// <param name="unitOfWork">The unit of work for committing changes.</param>
     public AcademyCommandService(
         IAcademyRepository academyRepository,
         IUserAccountRepository userRepository,
@@ -24,6 +33,12 @@ public sealed class AcademyCommandService : IAcademyCommandService
         _unitOfWork = unitOfWork;
     }
 
+    /// <summary>
+    /// Handles the creation of a new academy.
+    /// </summary>
+    /// <param name="command">The command containing academy creation data.</param>
+    /// <returns>The newly created <see cref="Academy"/> instance.</returns>
+    /// <exception cref="Exception">Thrown when the user does not exist or the RUC is already in use.</exception>
     public async Task<Academy> Handle(CreateAcademyCommand command)
     {
         // Validar que el usuario exista
