@@ -14,7 +14,7 @@ public partial class Invoice
     
     public Money MonetaryAmount { get; private set; }
     
-    public DateOnly DueDate { get; private set; }
+    public DateTime DueDate { get; private set; }
     
     public EInvoiceStatus Status { get; private set; }
 
@@ -22,7 +22,9 @@ public partial class Invoice
 
     public string Currency => MonetaryAmount.Currency.Code;
 
-    public Invoice(string dni, string name, decimal amount, string currency, DateOnly dueDate)
+    private Invoice() {}
+
+    public Invoice(string dni, string name, decimal amount, string currency, DateTime dueDate)
     {
         Dni = new Dni(dni);
         Name = name;
