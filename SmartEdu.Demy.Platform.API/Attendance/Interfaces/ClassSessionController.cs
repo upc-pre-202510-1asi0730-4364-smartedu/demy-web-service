@@ -5,6 +5,7 @@ using SmartEdu.Demy.Platform.API.Attendance.Interfaces.REST.Resources;
 using SmartEdu.Demy.Platform.API.Attendance.Interfaces.REST.Transform;
 using SmartEdu.Demy.Platform.API.Attendance.Domain.Model.Queries;
 using Microsoft.AspNetCore.Mvc;
+using SmartEdu.Demy.Platform.API.Shared.Domain.ValueObjects;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace SmartEdu.Demy.Platform.API.Attendance.Interfaces;
@@ -46,5 +47,33 @@ public class ClassSessionController(IClassSessionCommandService classSessionComm
     var resource = ClassSessionResourceFromEntityAssembler.ToResourceFromEntity(result);
     return Ok(resource);
   }
-    
+  [HttpGet("report")]
+  [SwaggerOperation(
+    Summary = "Generates attendance report for a student in a course",
+    Description = "Returns all attendance records for a given course, student DNI and date range",
+    OperationId = "GetClassSessionAttendanceReport")]
+  [SwaggerResponse(200, "The attendance report was generated", typeof(ClassSessionReportResource))]
+  public async Task<ActionResult> GetClassSessionAttendanceReport(
+    [FromQuery] long courseId,
+    [FromQuery] string dni,
+    [FromQuery] DateOnly startDate,
+    [FromQuery] DateOnly endDate)
+  {
+    // ✅ Usar el query correcto que devuelve List<ClassSession>
+    var query = new GetClassSessionsByCourseAndDateRangeQuery(courseId,dni ,startDate, endDate);
+
+    var sessions = await classSessionQueryService.Handle(query); // ✅ Este devuelve List<ClassSession>
+
+    if (sessions == null || sessions.Count == 0)
+      return NotFound("No class sessions found.");
+
+    // ✅ El assembler filtra los AttendanceRecord por DNI y usa el Date de cada sesión
+    var resource = ClassSessionReportFromEntityAssembler.ToResourceFromEntities(courseId, dni, sessions);
+
+    return Ok(resource);
+  }
+
+  
+  
+  
 }
