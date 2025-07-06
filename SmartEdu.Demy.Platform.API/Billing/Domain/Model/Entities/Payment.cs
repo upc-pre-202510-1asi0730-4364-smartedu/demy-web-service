@@ -8,7 +8,7 @@ public class Payment
 {
     public int Id { get; }
 
-    public int InvoiceId { get; private set; }
+    public int? InvoiceId { get; private set; }
     
     public Money MonetaryAmount { get; private set; }
 
@@ -16,7 +16,7 @@ public class Payment
     
     public DateTime PaidAt { get; private set; }
 
-    public Payment(int invoiceId, decimal amount, string currency, string method, DateTime paidAt)
+    public Payment(decimal amount, string currency, string method, DateTime paidAt, int? invoiceId = null)
     {
         InvoiceId = invoiceId;
         MonetaryAmount = new Money(amount, MyCurrency.Of(currency));
