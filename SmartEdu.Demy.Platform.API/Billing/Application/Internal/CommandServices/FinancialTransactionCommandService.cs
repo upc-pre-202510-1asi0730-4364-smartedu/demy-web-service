@@ -14,8 +14,8 @@ public class FinancialTransactionCommandService(
 {
     public async Task<FinancialTransaction?> Handle(CreateFinancialTransactionCommand command)
     {
-        if (!Enum.TryParse<EPaymentMethod>(command.method, out var methodEnum))
-            throw new ArgumentException($"Método de pago inválido: {command.method}");
+        if (!Enum.TryParse<EPaymentMethod>(command.method, ignoreCase: true, out var methodEnum))
+            throw new ArgumentException($"Invalid payment method: {command.method}");
 
         var payment = new Payment(
             command.amount,
@@ -62,7 +62,7 @@ public class FinancialTransactionCommandService(
         var financialTransaction = new FinancialTransaction(
             "Income",
             "Students",
-            $"Paid student invoice {invoice.Name} with DNI {invoice.Dni}",
+            $"Paid student invoice",
             DateTime.Now,
             payment
         );
@@ -101,6 +101,7 @@ public class FinancialTransactionCommandService(
         try
         {
             await financialTransactionRepository.AddAsync(financialTransaction);
+            await unitOfWork.CompleteAsync();
             return financialTransaction;
         }
         catch (Exception ex)
