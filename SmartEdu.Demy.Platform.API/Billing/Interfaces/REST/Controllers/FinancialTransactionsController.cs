@@ -52,7 +52,7 @@ public class FinancialTransactionsController(
         );
     }
 
-    [HttpPost("/invoices/{invoiceId}/payment")]
+    [HttpPost("invoices/{invoiceId}/payment")]
     public async Task<IActionResult> RegisterPayment([FromRoute] int invoiceId,
         [FromBody] RegisterPaymentResource resource)
     {
@@ -67,7 +67,7 @@ public class FinancialTransactionsController(
         );
     }
 
-    [HttpPost("/expenses")]
+    [HttpPost("expenses")]
     public async Task<IActionResult> RegisterExpense([FromBody] RegisterExpenseResource resource)
     {
         var registerExpenseCommand = RegisterExpenseCommandFromResourceAssembler.ToCommandFromResource(resource);
