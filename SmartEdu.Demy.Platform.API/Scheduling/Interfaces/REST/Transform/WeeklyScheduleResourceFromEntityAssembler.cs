@@ -16,11 +16,10 @@ public static class WeeklyScheduleResourceFromEntityAssembler
     public static WeeklyScheduleResource ToResourceFromEntity(WeeklySchedule entity)
     {
         var scheduleResources = entity.Schedules.Select(ScheduleResourceFromEntityAssembler.ToResourceFromEntity);
-        
+
         return new WeeklyScheduleResource(
             entity.Id,
             entity.Name,
-            scheduleResources,
-            entity.HasConflicts());
+            scheduleResources);
     }
 }

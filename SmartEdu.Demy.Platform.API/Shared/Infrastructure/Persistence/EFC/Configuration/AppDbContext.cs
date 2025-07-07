@@ -35,46 +35,116 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
         // Billing Context
         
         builder.Entity<Invoice>().HasKey(i => i.Id);
-        builder.Entity<Invoice>().Property(i => i.Id).IsRequired().ValueGeneratedOnAdd();
-        builder.Entity<Invoice>().Property(i => i.StudentId).IsRequired();
-        builder.Entity<Invoice>().Property(i => i.Amount).IsRequired();
-        builder.Entity<Invoice>().Property(i => i.Currency).IsRequired().HasMaxLength(3);
+        builder.Entity<Invoice>().Property(i => i.Id).ValueGeneratedOnAdd();
+
+        builder.Entity<Invoice>()
+            .OwnsOne(i => i.Dni, dni =>
+            {
+                dni.WithOwner().HasForeignKey("Id");
+
+                dni.Property(d => d.Value)
+                    .HasColumnName("dni")
+                    .IsRequired()
+                    .HasMaxLength(8);
+            });
+
+        builder.Entity<Invoice>()
+            .OwnsOne(i => i.MonetaryAmount, ma =>
+            {
+                ma.WithOwner().HasForeignKey("Id");
+
+                ma.Property(m => m.Amount)
+                    .HasColumnName("amount")
+                    .IsRequired();
+
+                ma.OwnsOne(m => m.Currency, currency =>
+                {
+                    currency.WithOwner().HasForeignKey("Id");
+
+                    currency.Property(c => c.Code)
+                        .HasColumnName("currency")
+                        .IsRequired()
+                        .HasMaxLength(3);
+                });
+            });
+
+        builder.Entity<Invoice>().Property(i => i.Name).IsRequired();
         builder.Entity<Invoice>().Property(i => i.DueDate).IsRequired();
         builder.Entity<Invoice>().Property(i => i.Status).IsRequired();
-        builder.Entity<Invoice>().HasMany(i => i.Payments)
-            .WithOne(p => p.Invoice)
-            .HasForeignKey(p => p.InvoiceId)
-            .OnDelete(DeleteBehavior.Cascade);
 
         builder.Entity<Payment>().HasKey(p => p.Id);
-        builder.Entity<Payment>().Property(p => p.Id).IsRequired().ValueGeneratedOnAdd();
-        builder.Entity<Payment>().Property(p => p.Amount).IsRequired();
-        builder.Entity<Payment>().Property(p => p.Currency).IsRequired().HasMaxLength(3);
+        builder.Entity<Payment>().Property(p => p.Id).ValueGeneratedOnAdd();
+        builder.Entity<Payment>().Property(p => p.InvoiceId);
+
+        builder.Entity<Payment>()
+            .OwnsOne(p => p.MonetaryAmount, ma =>
+            {
+                ma.WithOwner().HasForeignKey("Id");
+
+                ma.Property(m => m.Amount)
+                    .HasColumnName("amount")
+                    .IsRequired();
+
+                ma.OwnsOne(m => m.Currency, currency =>
+                {
+                    currency.WithOwner().HasForeignKey("Id");
+
+                    currency.Property(c => c.Code)
+                        .HasColumnName("currency")
+                        .IsRequired()
+                        .HasMaxLength(3);
+                });
+            });
+
         builder.Entity<Payment>().Property(p => p.Method).IsRequired();
         builder.Entity<Payment>().Property(p => p.PaidAt).IsRequired();
-        
+
+        builder.Entity<FinancialTransaction>().HasKey(ft => ft.Id);
+        builder.Entity<FinancialTransaction>().Property(ft => ft.Id).ValueGeneratedOnAdd();
+
+        builder.Entity<FinancialTransaction>().Property(ft => ft.Type)
+            .HasConversion<string>()
+            .IsRequired();
+
+        builder.Entity<FinancialTransaction>().Property(ft => ft.Category)
+            .HasConversion<string>()
+            .IsRequired();
+
+        builder.Entity<FinancialTransaction>().Property(ft => ft.Concept)
+            .IsRequired();
+
+        builder.Entity<FinancialTransaction>().Property(ft => ft.Date)
+            .IsRequired();
+
+        builder.Entity<FinancialTransaction>()
+            .HasOne(ft => ft.Payment)
+            .WithMany()
+            .HasForeignKey("PaymentId")
+            .IsRequired();
+
         // Enrollment Context
 
-        // ===== Student =====
         builder.Entity<Student>(b =>
         {
             b.HasKey(s => s.Id);
             b.Property(s => s.Id)
-             .IsRequired()
-             .ValueGeneratedOnAdd();
+                .IsRequired()
+                .ValueGeneratedOnAdd();
 
             b.Property(s => s.BirthDate)
-             .IsRequired();
+                .IsRequired();
 
             b.Property(s => s.Address)
-             .IsRequired()
-             .HasMaxLength(250);
+                .IsRequired()
+                .HasMaxLength(250);
 
             b.Property(s => s.Sex)
-             .IsRequired();
+                .IsRequired().HasConversion<string>();
 
             b.OwnsOne(s => s.Name, name =>
             {
+                name.WithOwner().HasForeignKey("Id");
+
                 name.Property(n => n.FirstName)
                     .IsRequired()
                     .HasMaxLength(100);
@@ -82,30 +152,30 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
                 name.Property(n => n.LastName)
                     .IsRequired()
                     .HasMaxLength(100);
-                name.WithOwner().HasForeignKey("id"); // igual que en TimeRange
             });
 
             b.OwnsOne(s => s.Dni, dni =>
             {
+                dni.WithOwner().HasForeignKey("Id");
+
                 dni.Property(d => d.Value)
-                    .HasColumnName("dni")       // columna única para DNI
+                    .HasColumnName("dni")
                    .IsRequired()
                    .HasMaxLength(8);
                 dni.HasIndex(d => d.Value).IsUnique();
-                dni.WithOwner().HasForeignKey("id"); // igual que en TimeRange
             });
 
             b.OwnsOne(s => s.PhoneNumber, phone =>
             {
+                phone.WithOwner().HasForeignKey("Id");
+
                 phone.Property(p => p.Value)
-                    .HasColumnName("phone_number")   // columna única para teléfono
-                     .IsRequired()
-                     .HasMaxLength(9);
-                phone.WithOwner().HasForeignKey("id"); // igual que en TimeRange
+                    .HasColumnName("phone_number")
+                    .IsRequired()
+                    .HasMaxLength(9);
             });
         });
 
-        // ===== AcademicPeriod =====
         builder.Entity<AcademicPeriod>(b =>
         {
             b.HasKey(p => p.Id);
@@ -128,11 +198,10 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
                 duration.Property(d => d.EndDate)
                         .IsRequired();
 
-                duration.WithOwner().HasForeignKey("id");  
+                duration.WithOwner().HasForeignKey("id");
             });
         });
 
-        // ===== Enrollment =====
         builder.Entity<Enrollment.Domain.Model.Aggregates.Enrollment>(b =>
         {
             b.HasKey(e => e.Id);
@@ -150,13 +219,14 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
 
             b.Property(e => e.EnrollmentStatus)
              .IsRequired()
-             .HasMaxLength(50);
+             .HasMaxLength(10)
+             .HasConversion<string>();
 
             b.Property(e => e.PaymentStatus)
              .IsRequired()
-             .HasMaxLength(50);
+             .HasMaxLength(10)
+             .HasConversion<string>();
 
-            // Relaciones
             b.HasOne<Student>()
              .WithMany()
              .HasForeignKey(e => e.StudentId)
@@ -167,9 +237,9 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
              .HasForeignKey(e => e.PeriodId)
              .OnDelete(DeleteBehavior.Restrict);
         });
-        
+
         // Attendance Context
-        
+
         builder.Entity<ClassSession>().HasKey(c => c.Id );
         builder.Entity<ClassSession>().Property(c => c.Id).IsRequired().ValueGeneratedOnAdd();
         builder.Entity<ClassSession>().Property(c => c.CourseId).IsRequired();
@@ -180,24 +250,24 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
             a.WithOwner().HasForeignKey("ClassSessionId");;
             a.Property(ar => ar.StudentId).HasColumnName("StudentId").IsRequired().ValueGeneratedNever();
             a.Property(ar => ar.Status).HasColumnName("Status").IsRequired();
-            
+
             a.HasKey("ClassSessionId","StudentId");
         });
-        
+
         // Scheduling Context
-        
+
         builder.Entity<Course>().HasKey(c => c.Id);
         builder.Entity<Course>().Property(c => c.Id).IsRequired().ValueGeneratedOnAdd();
         builder.Entity<Course>().Property(c => c.Name).IsRequired().HasMaxLength(100);
         builder.Entity<Course>().Property(c => c.Code).IsRequired().HasMaxLength(20);
         builder.Entity<Course>().Property(c => c.Description).HasMaxLength(500);
-        
+
         builder.Entity<Classroom>().HasKey(c => c.Id);
         builder.Entity<Classroom>().Property(c => c.Id).IsRequired().ValueGeneratedOnAdd();
         builder.Entity<Classroom>().Property(c => c.Code).IsRequired().HasMaxLength(20);
         builder.Entity<Classroom>().Property(c => c.Capacity).IsRequired();
         builder.Entity<Classroom>().Property(c => c.Campus).IsRequired().HasMaxLength(100);
-        
+
         // Scheduling Context
         builder.Entity<WeeklySchedule>().HasKey(ws => ws.Id);
         builder.Entity<WeeklySchedule>().Property(ws => ws.Id).IsRequired().ValueGeneratedOnAdd();
@@ -205,20 +275,28 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
 
         builder.Entity<Schedule>().HasKey(s => s.Id);
         builder.Entity<Schedule>().Property(s => s.Id).IsRequired().ValueGeneratedOnAdd();
-        
+        builder.Entity<Schedule>().Property(s => s.TeacherId).IsRequired();
+        builder.Entity<Schedule>().Property(s => s.DayOfWeek).HasConversion<string>();
+
         // Configure foreign keys and navigation properties for Schedule
         builder.Entity<Schedule>()
             .HasOne(s => s.Course)
             .WithMany()
             .HasForeignKey(s => s.CourseId)
             .OnDelete(DeleteBehavior.Restrict);
-            
+
         builder.Entity<Schedule>()
             .HasOne(s => s.Classroom)
             .WithMany()
             .HasForeignKey(s => s.ClassroomId)
             .OnDelete(DeleteBehavior.Restrict);
-        
+
+        builder.Entity<Schedule>()
+            .HasOne(s => s.Teacher)
+            .WithMany()
+            .HasForeignKey(s => s.TeacherId)
+            .OnDelete(DeleteBehavior.Restrict);
+
         // Configure TimeRange as a value object with explicit column type mapping
         builder.Entity<Schedule>().OwnsOne(s => s.TimeRange, timeRange =>
         {
@@ -227,16 +305,16 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
                 .HasConversion(
                     timeOnly => timeOnly.ToTimeSpan(),
                     timeSpan => TimeOnly.FromTimeSpan(timeSpan));
-                
+
             timeRange.Property(t => t.EndTime)
                 .IsRequired()
                 .HasConversion(
                     timeOnly => timeOnly.ToTimeSpan(),
                     timeSpan => TimeOnly.FromTimeSpan(timeSpan));
-                
+
             timeRange.WithOwner().HasForeignKey("id"); // Use the same primary key as Schedule
         });
-        
+
         builder.Entity<UserAccount>(entity =>
         {
             entity.ToTable("user_accounts");
@@ -244,7 +322,7 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
             entity.Property(e => e.Role).HasConversion<string>();
             entity.Property(e => e.Status).HasConversion<string>();
         });
-        
+
         // Convención de nombres snake_case
         builder.UseSnakeCaseNamingConvention();
     }

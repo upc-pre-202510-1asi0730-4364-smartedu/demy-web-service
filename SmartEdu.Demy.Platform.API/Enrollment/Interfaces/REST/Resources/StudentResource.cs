@@ -2,7 +2,8 @@
 
 public record StudentResource(
     int Id,
-    string Name,
+    string FirstName,
+    string LastName,
     string Dni,
     string Sex,
     DateTime BirthDate,

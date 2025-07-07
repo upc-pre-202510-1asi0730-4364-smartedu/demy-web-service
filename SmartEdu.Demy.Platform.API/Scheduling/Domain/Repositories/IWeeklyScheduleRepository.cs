@@ -10,4 +10,6 @@ public interface IWeeklyScheduleRepository : IBaseRepository<WeeklySchedule>
     Task<IEnumerable<WeeklySchedule>> FindByCourseIdAsync(int courseId);
     
     Task<IEnumerable<WeeklySchedule>> FindByClassroomIdAsync(int classroomId);
+    
+    Task<WeeklySchedule?> FindWeeklyScheduleByNameAsync(string name);
 }

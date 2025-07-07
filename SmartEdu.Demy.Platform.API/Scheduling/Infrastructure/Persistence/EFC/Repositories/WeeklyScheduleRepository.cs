@@ -32,18 +32,9 @@ public class WeeklyScheduleRepository(AppDbContext context)
             .Where(ws => ws.Schedules.Any(s => s.ClassroomId == classroomId))
             .ToListAsync();
     }
-
-    public async Task<WeeklySchedule?> FindByIdAsync(int id)
+    
+    public async Task<WeeklySchedule?> FindWeeklyScheduleByNameAsync(string name)
     {
-        return await Context.Set<WeeklySchedule>()
-            .Include(ws => ws.Schedules)
-            .FirstOrDefaultAsync(ws => ws.Id == id);
-    }
-
-    public async Task<IEnumerable<WeeklySchedule>> ListAsync()
-    {
-        return await Context.Set<WeeklySchedule>()
-            .Include(ws => ws.Schedules)
-            .ToListAsync();
+        return Context.Set<WeeklySchedule>().FirstOrDefault(p => p.Name == name);
     }
 }

@@ -1,7 +1,7 @@
-﻿namespace SmartEdu.Demy.Platform.API.Enrollment.Domain.Model.ValueObjects
+﻿namespace SmartEdu.Demy.Platform.API.Shared.Domain.Model.ValueObjects
 {
     /// <summary>
-    /// Value object para un DNI
+    /// Value object DNI
     /// </summary>
     public record Dni
     {

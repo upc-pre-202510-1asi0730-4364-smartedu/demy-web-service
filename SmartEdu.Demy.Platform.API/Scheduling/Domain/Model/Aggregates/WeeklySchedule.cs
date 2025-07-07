@@ -62,9 +62,9 @@ public partial class WeeklySchedule
         ValidateWeeklySchedule();
     }
     
-    private void AddSchedule(TimeRange timeRange, DayOfWeek dayOfWeek, int courseId, int classroomId)
+    private void AddSchedule(TimeRange timeRange, DayOfWeek dayOfWeek, int courseId, int classroomId, long teacherId)
     {
-        var schedule = new Schedule(timeRange, dayOfWeek, courseId, classroomId);
+        var schedule = new Schedule(timeRange, dayOfWeek, courseId, classroomId, teacherId);
         AddSchedule(schedule);
     }
     
@@ -81,7 +81,7 @@ public partial class WeeklySchedule
 
         var timeRange = new TimeRange(command.StartTime, command.EndTime);
 
-        AddSchedule(timeRange, dayOfWeek, command.CourseId, command.ClassroomId);
+        AddSchedule(timeRange, dayOfWeek, command.CourseId, command.ClassroomId, command.TeacherId);
     }
     
     public void RemoveSchedule(RemoveScheduleFromWeeklyCommand command)
