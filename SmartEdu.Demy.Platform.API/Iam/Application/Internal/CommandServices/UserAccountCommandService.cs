@@ -11,6 +11,11 @@ using SmartEdu.Demy.Platform.API.Shared.Infrastructure.Persistence.EFC.Configura
 
 namespace SmartEdu.Demy.Platform.API.Iam.Application.Internal.CommandServices;
 
+
+/// <summary>
+/// Application service responsible for handling commands related to user account operations,
+/// including admin and teacher registration, authentication, password reset, and deletion.
+/// </summary>
 public sealed class UserAccountCommandService : IUserAccountCommandService
 {
     private readonly IUserAccountRepository _userRepository;
@@ -18,6 +23,9 @@ public sealed class UserAccountCommandService : IUserAccountCommandService
     private readonly ITokenService _tokenService;
     private readonly IUnitOfWork _unitOfWork;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="UserAccountCommandService"/> class.
+    /// </summary>
     public UserAccountCommandService(
         IUserAccountRepository userRepository,
         IHashingService hashingService,
@@ -30,6 +38,11 @@ public sealed class UserAccountCommandService : IUserAccountCommandService
         _unitOfWork = unitOfWork;
     }
     
+    /// <summary>
+    /// Handles the sign-up process for a new admin user.
+    /// </summary>
+    /// <param name="command">The sign-up command containing full name, email, and password.</param>
+    /// <returns>The created <see cref="UserAccount"/>.</returns>
     public async Task<UserAccount> Handle(SignUpAdminCommand command)
     {
         if (await _userRepository.ExistsByEmailAsync(command.Email))
@@ -42,6 +55,12 @@ public sealed class UserAccountCommandService : IUserAccountCommandService
         await _unitOfWork.CompleteAsync();
         return user;
     }
+    
+    /// <summary>
+    /// Handles the sign-in process for an admin user.
+    /// </summary>
+    /// <param name="command">The sign-in command containing email and password.</param>
+    /// <returns>A tuple with the authenticated user and a JWT token.</returns>
     public async Task<(UserAccount user, string token)> Handle(SignInAdminCommand command)
     {
         var user = await _userRepository.FindByEmailAsync(command.Email);
@@ -54,6 +73,12 @@ public sealed class UserAccountCommandService : IUserAccountCommandService
         var token = _tokenService.GenerateToken(user);
         return (user, token);
     }
+    
+    /// <summary>
+    /// Handles the creation of a new teacher account.
+    /// </summary>
+    /// <param name="command">The command containing teacher creation details.</param>
+    /// <returns>The created <see cref="UserAccount"/>.</returns>
     public async Task<UserAccount> Handle(CreateTeacherCommand command)
     {
         if (await _userRepository.ExistsByEmailAsync(command.Email))
@@ -66,6 +91,11 @@ public sealed class UserAccountCommandService : IUserAccountCommandService
         await _unitOfWork.CompleteAsync();
         return user;
     }
+    /// <summary>
+    /// Handles updating an existing teacher account.
+    /// </summary>
+    /// <param name="command">The update command containing the teacher's new information.</param>
+    /// <returns>The updated <see cref="UserAccount"/>.</returns>
     public async Task<UserAccount> Handle(UpdateTeacherCommand command)
     {
         var user = await _userRepository.FindByIdAsync(command.Id);
@@ -84,6 +114,10 @@ public sealed class UserAccountCommandService : IUserAccountCommandService
         return user;
     }
 
+    /// <summary>
+    /// Handles deletion of a teacher account.
+    /// </summary>
+    /// <param name="command">The command containing the teacher's ID to delete.</param>
     public async Task Handle(DeleteTeacherCommand command)
     {
         var user = await _userRepository.FindByIdAsync(command.Id);
@@ -93,6 +127,11 @@ public sealed class UserAccountCommandService : IUserAccountCommandService
         _userRepository.Remove(user);
         await _unitOfWork.CompleteAsync();
     }
+    /// <summary>
+    /// Handles the sign-in process for a teacher account.
+    /// </summary>
+    /// <param name="command">The sign-in command with email and password.</param>
+    /// <returns>A tuple with the authenticated user and a JWT token.</returns>
     public async Task<(UserAccount user, string token)> Handle(SignInTeacherCommand command)
     {
         var user = await _userRepository.FindByEmailAsync(command.Email);
@@ -105,6 +144,11 @@ public sealed class UserAccountCommandService : IUserAccountCommandService
         var token = _tokenService.GenerateToken(user);
         return (user, token);
     }
+    
+    /// <summary>
+    /// Handles the reset of a user's password.
+    /// </summary>
+    /// <param name="command">The reset password command with email and new password.</param>
     public async Task Handle(ResetPasswordCommand command)
     {
         var user = await _userRepository.FindByEmailAsync(command.Email);

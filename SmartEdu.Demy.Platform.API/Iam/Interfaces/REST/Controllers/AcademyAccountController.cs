@@ -9,6 +9,9 @@ using Swashbuckle.AspNetCore.Annotations;
 
 namespace SmartEdu.Demy.Platform.API.Iam.Interfaces.Rest.Controllers;
 
+/// <summary>
+/// REST controller for managing academies.
+/// </summary>
 [ApiController]
 [Route("api/v1/academies")]
 [Produces(MediaTypeNames.Application.Json)]
@@ -17,14 +20,29 @@ public class AcademiesController : ControllerBase
 {
     private readonly IAcademyCommandService _commandService;
 
+    /// <summary>
+    /// Constructor for AcademiesController.
+    /// </summary>
+    /// <param name="commandService">Service to handle academy commands.</param>
     public AcademiesController(IAcademyCommandService commandService)
     {
         _commandService = commandService;
     }
     
+    /// <summary>
+    /// Creates a new academy.
+    /// </summary>
+    /// <param name="request">Academy creation resource containing UserId, AcademyName, and RUC.</param>
+    /// <returns>Returns the created academy resource and a success message.</returns>
     [AllowAnonymous]
     [HttpPost]
-    [SwaggerOperation(Summary = "Create new academy", OperationId = "CreateAcademy")]
+    [SwaggerOperation(
+        Summary = "Create new academy",
+        Description = "Creates a new academy and assigns it to a given user.",
+        OperationId = "CreateAcademy"
+    )]
+    [SwaggerResponse(StatusCodes.Status201Created, "Academy created successfully")]
+    [SwaggerResponse(StatusCodes.Status400BadRequest, "Invalid input or business rule violation")]
     public async Task<IActionResult> Create([FromBody] CreateAcademyResource request)
     {
         try
