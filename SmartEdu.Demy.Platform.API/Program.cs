@@ -39,6 +39,7 @@ using SmartEdu.Demy.Platform.API.Iam.Domain.Repositories;
 using SmartEdu.Demy.Platform.API.Iam.Domain.Services;
 using SmartEdu.Demy.Platform.API.Iam.Infrastructure.EFC;
 using SmartEdu.Demy.Platform.API.Iam.Infrastructure.Hashing.BCrypt.Services;
+using SmartEdu.Demy.Platform.API.Iam.Infrastructure.Persistence;
 using SmartEdu.Demy.Platform.API.Iam.Infrastructure.Pipeline.Middleware.Extensions;
 using SmartEdu.Demy.Platform.API.Iam.Infrastructure.Tokens.JWT.Configuration;
 using SmartEdu.Demy.Platform.API.Iam.Infrastructure.Tokens.JWT.Services;
@@ -184,7 +185,7 @@ builder.Services.AddScoped<IStudentCommandService, StudentCommandService>();
 builder.Services.AddScoped<IStudentQueryService, StudentQueryService>();
 builder.Services.AddScoped<IStudentRepository, StudentRepository>();
 
-// Iam Bounded Context
+
 
 // TokenSettings Configuration
 builder.Services.Configure<TokenSettings>(builder.Configuration.GetSection("TokenSettings"));
@@ -192,9 +193,11 @@ builder.Services.Configure<TokenSettings>(builder.Configuration.GetSection("Toke
 // Dependency Injection for IAM Bounded Context
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IHashingService, HashingService>();
-builder.Services.AddScoped<IUserAccountRepository, UserRepository>();
+builder.Services.AddScoped<IUserAccountRepository, UserAccountRepository>();
 builder.Services.AddScoped<IUserAccountQueryService, UserAccountQueryService>();
 builder.Services.AddScoped<IUserAccountCommandService, UserAccountCommandService>();
+builder.Services.AddScoped<IAcademyRepository, AcademyRepository>();
+builder.Services.AddScoped<IAcademyCommandService, AcademyCommandService>();
 
 //Dependency Injection for Attendance Bounded Context
 builder.Services.AddScoped<ExternalEnrollmentServiceForAttendance>();
@@ -228,13 +231,13 @@ app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
 app.UseCors("AllowAllPolicy");
 
 // Add Authorization Middleware to Pipeline
-app.UseRequestAuthorization();
+//app.UseRequestAuthorization();
 
 // HTTPS Redirection
 app.UseHttpsRedirection();
 
 // Authorization
-app.UseAuthorization();
+//app.UseAuthorization();
 
 // Map controllers
 app.MapControllers();

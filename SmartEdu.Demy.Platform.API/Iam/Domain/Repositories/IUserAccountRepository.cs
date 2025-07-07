@@ -25,6 +25,13 @@ public interface IUserAccountRepository : IBaseRepository<UserAccount>
     /// <returns>True if exists, otherwise false</returns>
     bool ExistsByUsername(string username);
 
+    Task<bool> ExistsByEmailAsync(string email);
+    Task<UserAccount?> FindByEmailAsync(string email);
+    Task<UserAccount?> FindByIdAsync(long id);
+    
+
+    Task<bool> ExistsByIdAsync(long id);
+
     /// <summary>
     /// Find a user account by ID
     /// </summary>

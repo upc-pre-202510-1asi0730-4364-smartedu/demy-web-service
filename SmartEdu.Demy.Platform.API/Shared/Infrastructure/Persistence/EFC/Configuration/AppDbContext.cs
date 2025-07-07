@@ -18,9 +18,6 @@ namespace SmartEdu.Demy.Platform.API.Shared.Infrastructure.Persistence.EFC.Confi
 /// </summary>
 public class AppDbContext(DbContextOptions options) : DbContext(options)
 {
-    // Esto no debería ir aquí
-    public DbSet<UserAccount> UserAccounts { get; set; }
-    
     protected override void OnConfiguring(DbContextOptionsBuilder builder)
     {
         // Add the created and updated interceptor
@@ -283,7 +280,6 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
         builder.Entity<Classroom>().Property(c => c.Capacity).IsRequired();
         builder.Entity<Classroom>().Property(c => c.Campus).IsRequired().HasMaxLength(100);
 
-        // Scheduling Context
         builder.Entity<WeeklySchedule>().HasKey(ws => ws.Id);
         builder.Entity<WeeklySchedule>().Property(ws => ws.Id).IsRequired().ValueGeneratedOnAdd();
         builder.Entity<WeeklySchedule>().Property(ws => ws.Name).IsRequired().HasMaxLength(100);
@@ -330,12 +326,25 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
             timeRange.WithOwner().HasForeignKey("id"); // Use the same primary key as Schedule
         });
 
+        // ===== Iam =====
         builder.Entity<UserAccount>(entity =>
         {
             entity.ToTable("user_accounts");
             entity.HasKey(e => e.UserId);
             entity.Property(e => e.Role).HasConversion<string>();
             entity.Property(e => e.Status).HasConversion<string>();
+        });
+        builder.Entity<Academy>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.AcademyName).IsRequired();
+            entity.Property(e => e.Ruc).IsRequired();
+            entity.Property(e => e.UserId).IsRequired();
+
+            entity.HasOne(a => a.User)
+                .WithMany()
+                .HasForeignKey(a => a.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
         });
 
         // Convención de nombres snake_case
