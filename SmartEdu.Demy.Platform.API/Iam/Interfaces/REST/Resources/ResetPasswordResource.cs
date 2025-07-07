@@ -5,6 +5,5 @@
 /// </summary>
 public record ResetPasswordResource(
     string Email,
-    string NewPassword,
-    string RepeatPassword
+    string NewPassword
 );

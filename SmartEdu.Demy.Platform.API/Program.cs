@@ -10,29 +10,46 @@ using SmartEdu.Demy.Platform.API.Scheduling.Domain.Repositories;
 using SmartEdu.Demy.Platform.API.Scheduling.Domain.Services;
 using SmartEdu.Demy.Platform.API.Scheduling.Infrastructure.Persistence.EFC.Repositories;
 using SmartEdu.Demy.Platform.API.Attendance.Application.Internal.CommandServices;
+using SmartEdu.Demy.Platform.API.Attendance.Application.Internal.OutboundServices.ACL;
 using SmartEdu.Demy.Platform.API.Attendance.Application.Internal.QueryServices;
 using SmartEdu.Demy.Platform.API.Attendance.Domain.Repositories;
 using SmartEdu.Demy.Platform.API.Attendance.Domain.Services;
 using SmartEdu.Demy.Platform.API.Attendance.Infrastructure.Repositories;
+using SmartEdu.Demy.Platform.API.Enrollment.Application.ACL;
+using SmartEdu.Demy.Platform.API.Enrollment.Application.ACL;
+using SmartEdu.Demy.Platform.API.Billing.Application.Internal.CommandServices;
+using SmartEdu.Demy.Platform.API.Billing.Application.Internal.OutboundServices.ACL;
+using SmartEdu.Demy.Platform.API.Enrollment.Application.ACL;
 using SmartEdu.Demy.Platform.API.Shared.Domain.Repositories;
 using SmartEdu.Demy.Platform.API.Shared.Infrastructure.Interfaces.ASP.Configuration;
 using SmartEdu.Demy.Platform.API.Shared.Infrastructure.Persistence.EFC.Configuration;
 using SmartEdu.Demy.Platform.API.Shared.Infrastructure.Persistence.EFC.Repositories;
 using SmartEdu.Demy.Platform.API.Enrollment.Application.Internal.CommandServices;
+using SmartEdu.Demy.Platform.API.Enrollment.Application.Internal.OutboundServices.ACL;
 using SmartEdu.Demy.Platform.API.Enrollment.Application.Internal.QueryServices;
 using SmartEdu.Demy.Platform.API.Enrollment.Domain.Repositories;
 using SmartEdu.Demy.Platform.API.Enrollment.Domain.Services;
 using SmartEdu.Demy.Platform.API.Enrollment.Application.Internal.QueryServices;
 using SmartEdu.Demy.Platform.API.Enrollment.Infrastructure.Persistence.EFC.Repositories;
+using SmartEdu.Demy.Platform.API.Enrollment.Interfaces.ACL;
 using SmartEdu.Demy.Platform.API.Iam.Application.Internal.CommandServices;
+using SmartEdu.Demy.Platform.API.Iam.Application.Internal.OutboundServices;
 using SmartEdu.Demy.Platform.API.Iam.Application.Internal.QueryServices;
 using SmartEdu.Demy.Platform.API.Iam.Domain.Repositories;
 using SmartEdu.Demy.Platform.API.Iam.Domain.Services;
 using SmartEdu.Demy.Platform.API.Iam.Infrastructure.EFC;
+using SmartEdu.Demy.Platform.API.Iam.Infrastructure.Hashing.BCrypt.Services;
+using SmartEdu.Demy.Platform.API.Iam.Infrastructure.Persistence;
+using SmartEdu.Demy.Platform.API.Iam.Infrastructure.Pipeline.Middleware.Extensions;
+using SmartEdu.Demy.Platform.API.Iam.Infrastructure.Tokens.JWT.Configuration;
+using SmartEdu.Demy.Platform.API.Iam.Infrastructure.Tokens.JWT.Services;
+using SmartEdu.Demy.Platform.API.Scheduling.Application.ACL;
+using SmartEdu.Demy.Platform.API.Scheduling.Interfaces.ACL;
 using SmartEdu.Demy.Platform.API.Shared.Domain.Repositories;
 using SmartEdu.Demy.Platform.API.Shared.Infrastructure.Interfaces.ASP.Configuration;
 using SmartEdu.Demy.Platform.API.Shared.Infrastructure.Persistence.EFC.Configuration;
 using SmartEdu.Demy.Platform.API.Shared.Infrastructure.Persistence.EFC.Repositories;
+using SmartEdu.Demy.Platform.API.Shared.Infrastructure.Pipeline.Middleware.Components;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -88,6 +105,29 @@ builder.Services.AddSwaggerGen(options =>
         Version = "v1",
         Description = "Backend RESTful API for SmartEdu Demy"
     });
+    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        In = ParameterLocation.Header,
+        Description = "Please enter token",
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        BearerFormat = "JWT",
+        Scheme = "bearer"
+    });
+    options.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Id = "Bearer",
+                    Type = ReferenceType.SecurityScheme
+                }
+            },
+            Array.Empty<string>()
+        }
+    });
 });
 
 // Dependency Injection Configuration
@@ -97,7 +137,13 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 // Billing Bounded Context Dependency Injection Configuration
 builder.Services.AddScoped<IInvoiceRepository, InvoiceRepository>();
+builder.Services.AddScoped<IInvoiceCommandService, InvoiceCommandService>();
 builder.Services.AddScoped<IInvoiceQueryService, InvoiceQueryService>();
+builder.Services.AddScoped<ExternalEnrollmentsService>();
+
+builder.Services.AddScoped<IFinancialTransactionRepository, FinancialTransactionRepository>();
+builder.Services.AddScoped<IFinancialTransactionCommandService, FinancialTransactionCommandService>();
+builder.Services.AddScoped<IFinancialTransactionQueryService, FinancialTransactionQueryService>();
 
 // Attendance Bounded Context Dependency Injection Configuration
 builder.Services.AddScoped<IClassSessionRepository, ClassSessionRepository>();
@@ -116,6 +162,10 @@ builder.Services.AddScoped<IClassroomRepository, ClassroomRepository>();
 builder.Services.AddScoped<IWeeklyScheduleCommandService, WeeklyScheduleCommandService>();
 builder.Services.AddScoped<IWeeklyScheduleQueryService, WeeklyScheduleQueryService>();
 builder.Services.AddScoped<IWeeklyScheduleRepository, WeeklyScheduleRepository>();
+builder.Services.AddScoped<ISchedulingsContextFacade, SchedulingsContextFacade>();
+
+builder.Services.AddScoped<IScheduleQueryService, ScheduleQueryService>();
+builder.Services.AddScoped<IScheduleRepository, ScheduleRepository>();
 
 // Enrollment Bounded Context Dependency Injection Configuration
 // AcademicPeriod
@@ -127,16 +177,31 @@ builder.Services.AddScoped<IAcademicPeriodRepository, AcademicPeriodRepository>(
 builder.Services.AddScoped<IEnrollmentCommandService, EnrollmentCommandService>();
 builder.Services.AddScoped<IEnrollmentQueryService, EnrollmentQueryService>();
 builder.Services.AddScoped<IEnrollmentRepository, EnrollmentRepository>();
+builder.Services.AddScoped<IEnrollmentsContextFacade, EnrollmentsContextFacade>();
+builder.Services.AddScoped<ExternalSchedulingService>();
 
 // Student
 builder.Services.AddScoped<IStudentCommandService, StudentCommandService>();
 builder.Services.AddScoped<IStudentQueryService, StudentQueryService>();
 builder.Services.AddScoped<IStudentRepository, StudentRepository>();
 
-// Iam Bounded Context Dependency Injection Configuration
-builder.Services.AddScoped<IUserAccountRepository, UserRepository>();
+
+
+// TokenSettings Configuration
+builder.Services.Configure<TokenSettings>(builder.Configuration.GetSection("TokenSettings"));
+
+// Dependency Injection for IAM Bounded Context
+builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddScoped<IHashingService, HashingService>();
+builder.Services.AddScoped<IUserAccountRepository, UserAccountRepository>();
 builder.Services.AddScoped<IUserAccountQueryService, UserAccountQueryService>();
 builder.Services.AddScoped<IUserAccountCommandService, UserAccountCommandService>();
+builder.Services.AddScoped<IAcademyRepository, AcademyRepository>();
+builder.Services.AddScoped<IAcademyCommandService, AcademyCommandService>();
+
+//Dependency Injection for Attendance Bounded Context
+builder.Services.AddScoped<ExternalEnrollmentServiceForAttendance>();
+builder.Services.AddScoped<IEnrollmentsContextFacade, EnrollmentsContextFacade>();
 
 // Add this to bind to Railway's assigned PORT
 if (builder.Environment.IsProduction())
@@ -155,16 +220,26 @@ using (var scope = app.Services.CreateScope())
     context.Database.EnsureCreated();
 }
 
+// Enable Swagger
 app.UseSwagger();
 app.UseSwaggerUI();
+
+// Global error handling middleware
+app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
 
 // Enable CORS
 app.UseCors("AllowAllPolicy");
 
+// Add Authorization Middleware to Pipeline
+app.UseRequestAuthorization();
+
+// HTTPS Redirection
 app.UseHttpsRedirection();
 
-// app.UseAuthorization();
+// Authorization
+app.UseAuthorization();
 
+// Map controllers
 app.MapControllers();
 
 app.Run();

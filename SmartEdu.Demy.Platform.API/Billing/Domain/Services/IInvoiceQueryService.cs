@@ -5,5 +5,6 @@ namespace SmartEdu.Demy.Platform.API.Billing.Domain.Services;
 
 public interface IInvoiceQueryService
 {
-    Task<IEnumerable<Invoice>> Handle(GetAllInvoicesByStudentIdQuery query);
+    Task<Invoice?> Handle(GetInvoiceByIdQuery query);
+    Task<IEnumerable<Invoice>> Handle(GetAllInvoicesByDniQuery query);
 }

@@ -21,7 +21,7 @@ public class CourseCommandService(
             await unitOfWork.CompleteAsync();
             return course;
         } 
-        catch (Exception e)
+        catch 
         {
             // Log error
             return null;
@@ -40,7 +40,7 @@ public class CourseCommandService(
             await unitOfWork.CompleteAsync();
             return course;
         }
-        catch (Exception e)
+        catch 
         {
             // Log error
             return null;
@@ -58,7 +58,7 @@ public class CourseCommandService(
             await unitOfWork.CompleteAsync();
             return true;
         }
-        catch (Exception e)
+        catch
         {
             // Log error
             return false;

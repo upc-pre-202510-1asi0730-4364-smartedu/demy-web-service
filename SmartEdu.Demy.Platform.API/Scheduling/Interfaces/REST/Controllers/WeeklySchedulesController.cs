@@ -7,7 +7,7 @@ using SmartEdu.Demy.Platform.API.Scheduling.Interfaces.REST.Transform;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 
-namespace SmartEdu.Demy.Platform.API.Scheduling.Interfaces.REST;
+namespace SmartEdu.Demy.Platform.API.Scheduling.Interfaces.REST.Controllers;
 
 [ApiController]
 [Route("api/v1/[controller]")]
@@ -15,7 +15,8 @@ namespace SmartEdu.Demy.Platform.API.Scheduling.Interfaces.REST;
 [SwaggerTag("Available Weekly Schedule Endpoints.")]
 public class WeeklySchedulesController(
     IWeeklyScheduleCommandService weeklyScheduleCommandService,
-    IWeeklyScheduleQueryService weeklyScheduleQueryService)
+    IWeeklyScheduleQueryService weeklyScheduleQueryService,
+    IScheduleQueryService scheduleQueryService)
     : ControllerBase
 {
     [HttpGet("{weeklyScheduleId:int}")]
@@ -79,7 +80,7 @@ public class WeeklySchedulesController(
         {
             return BadRequest(new { error = ex.Message });
         }
-        catch (Exception ex)
+        catch
         {
             return BadRequest(new { error = "An unexpected error occurred while adding the schedule" });
         }
@@ -113,5 +114,53 @@ public class WeeklySchedulesController(
         
         var weeklyScheduleResource = WeeklyScheduleResourceFromEntityAssembler.ToResourceFromEntity(weeklySchedule);
         return Ok(weeklyScheduleResource);
+    } 
+    
+    [HttpDelete("{weeklyScheduleId:int}")]
+    [SwaggerOperation("Delete Weekly Schedule", "Delete a weekly schedule by its unique identifier.", OperationId = "DeleteWeeklySchedule")]
+    [SwaggerResponse(200, "Weekly schedule deleted successfully")]
+    [SwaggerResponse(404, "Weekly schedule not found")]
+    public async Task<IActionResult> DeleteWeeklySchedule(int weeklyScheduleId)
+    {
+        var command = new DeleteWeeklyScheduleCommand(weeklyScheduleId);
+        await weeklyScheduleCommandService.Handle(command);
+        return Ok(new { message = "WeeklySchedule deleted successfully" });
     }
+
+    [HttpGet("by-teacher/{teacherId:int}")]
+    [SwaggerOperation("Get Schedules by Teacher Id", "Get all schedules for a given teacher ID.", OperationId = "GetSchedulesByTeacherId")]
+    [SwaggerResponse(200, "Schedules found", typeof(IEnumerable<ScheduleResource>))]
+    [SwaggerResponse(404, "No schedules found for teacher ID")]
+    public async Task<IActionResult> GetSchedulesByTeacherId(int teacherId)
+    {
+        var query = new GetSchedulesByTeacherIdQuery(teacherId);
+        var schedules = await scheduleQueryService.Handle(query);
+        
+        if (schedules == null || !schedules.Any())
+        {
+            return NotFound();
+        }
+        
+        var scheduleResources = schedules.Select(ScheduleResourceFromEntityAssembler.ToResourceFromEntity);
+        return Ok(scheduleResources);
+    }
+
+    [HttpPut("schedules/{scheduleId:int}")]
+    [SwaggerOperation("Update Schedule", "Updates the classroom, start time, end time and day fields of a Schedule by its ID.", OperationId = "UpdateSchedule")]
+    [SwaggerResponse(200, "Schedule updated successfully", typeof(ScheduleResource))]
+    [SwaggerResponse(404, "Schedule not found")]
+    public async Task<IActionResult> UpdateSchedule(int scheduleId, UpdateScheduleResource resource)
+    {
+        var command = UpdateScheduleCommandFromResourceAssembler.ToCommandFromResource(scheduleId, resource);
+        var updatedSchedule = await weeklyScheduleCommandService.Handle(command);
+        
+        if (updatedSchedule is null)
+        {
+            return NotFound();
+        }
+        
+        var scheduleResource = ScheduleResourceFromEntityAssembler.ToResourceFromEntity(updatedSchedule);
+        return Ok(scheduleResource);
+    }
+    
 }

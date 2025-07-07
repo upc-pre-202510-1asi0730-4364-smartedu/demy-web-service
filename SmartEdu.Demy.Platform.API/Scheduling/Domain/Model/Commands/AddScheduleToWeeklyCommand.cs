@@ -8,4 +8,5 @@ public record AddScheduleToWeeklyCommand(
     string StartTime,
     string EndTime,
     int CourseId,
-    int ClassroomId);
+    int ClassroomId,
+    long TeacherId);

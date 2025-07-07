@@ -3,7 +3,6 @@
 public enum EEnrollmentStatus
 {
     ACTIVE,
-    CANCELLED,
     COMPLETED,
-    DELETED,
+    CANCELLED
 }
