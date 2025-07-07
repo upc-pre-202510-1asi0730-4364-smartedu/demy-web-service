@@ -22,7 +22,7 @@ public class Payment
     {
         InvoiceId = invoiceId;
         MonetaryAmount = new Money(amount, MyCurrency.Of(currency));
-        Method = Enum.Parse<EPaymentMethod>(method);
+        Method = Enum.Parse<EPaymentMethod>(method, ignoreCase: true);
         PaidAt = paidAt;
     }
 }
