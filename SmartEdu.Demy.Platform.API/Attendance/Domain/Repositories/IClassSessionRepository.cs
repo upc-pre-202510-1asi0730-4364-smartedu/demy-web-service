@@ -15,7 +15,7 @@ public interface IClassSessionRepository : IBaseRepository<ClassSession>
     /// <param name="date">The date of the class session.</param>
     /// <returns>A task that returns the matching <see cref="ClassSession"/>, or null if not found.</returns>
     Task<ClassSession> FindByCourseAndDateAsync(int courseId, DateOnly date);
-    
+
     /// <summary>
     /// Retrieves attendance records by course ID, student DNI, and a date range.
     /// </summary>

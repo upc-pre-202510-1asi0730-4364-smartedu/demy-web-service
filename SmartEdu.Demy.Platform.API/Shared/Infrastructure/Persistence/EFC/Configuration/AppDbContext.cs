@@ -252,6 +252,7 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
                 dt => DateOnly.FromDateTime(dt)         // al leer
             );
 
+
         builder.Entity<ClassSession>().OwnsMany(c => c.Attendance, a =>
         {
             a.WithOwner().HasForeignKey("ClassSessionId");

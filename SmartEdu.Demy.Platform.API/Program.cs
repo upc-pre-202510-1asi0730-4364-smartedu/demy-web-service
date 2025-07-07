@@ -16,6 +16,7 @@ using SmartEdu.Demy.Platform.API.Attendance.Domain.Repositories;
 using SmartEdu.Demy.Platform.API.Attendance.Domain.Services;
 using SmartEdu.Demy.Platform.API.Attendance.Infrastructure.Repositories;
 using SmartEdu.Demy.Platform.API.Enrollment.Application.ACL;
+using SmartEdu.Demy.Platform.API.Enrollment.Application.ACL;
 using SmartEdu.Demy.Platform.API.Billing.Application.Internal.CommandServices;
 using SmartEdu.Demy.Platform.API.Billing.Application.Internal.OutboundServices.ACL;
 using SmartEdu.Demy.Platform.API.Enrollment.Application.ACL;
