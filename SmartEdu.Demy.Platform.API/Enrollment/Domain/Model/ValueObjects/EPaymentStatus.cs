@@ -4,6 +4,5 @@ public enum EPaymentStatus
 {
     PENDING,
     PAID,
-    REFUNDED,
-    PARTIALLY_PAIDED,
+    REFUNDED
 }

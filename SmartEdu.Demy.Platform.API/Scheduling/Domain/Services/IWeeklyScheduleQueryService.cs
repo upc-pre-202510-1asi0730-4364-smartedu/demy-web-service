@@ -8,4 +8,6 @@ public interface IWeeklyScheduleQueryService
     Task<IEnumerable<WeeklySchedule>> Handle(GetAllWeeklySchedulesQuery query);
     
     Task<WeeklySchedule?> Handle(GetWeeklyByIdQuery query);
+    
+    Task<WeeklySchedule?> Handle(GetWeeklyScheduleByNameQuery query);
 }
