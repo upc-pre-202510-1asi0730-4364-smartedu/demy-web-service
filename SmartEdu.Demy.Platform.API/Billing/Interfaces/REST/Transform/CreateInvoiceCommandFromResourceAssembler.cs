@@ -11,7 +11,7 @@ public static class CreateInvoiceCommandFromResourceAssembler
             dni,
             resource.Amount,
             resource.Currency,
-            resource.Date
+            resource.DueDate
         );
     }
 }
